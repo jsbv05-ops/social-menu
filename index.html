@@ -281,7 +281,8 @@ const CARTA = {
   sodas:[
     {name:"Sodas",items:[
       {id:"sodakiwi",name:"Soda de kiwi",price:12000,t:["frutal","acido"]},
-      {id:"sodafrutos",name:"Soda de frutos rojos",price:12000,t:["frutal","acido"]}]},
+      {id:"sodafrutos",name:"Soda de frutos rojos",price:12000,t:["frutal","acido"]},
+      {id:"sodasandia",name:"Soda de sandía y lichis",price:12000,t:["frutal","dulce"]}]},
     {name:"Batidos",items:[
       {id:"lemonpink",name:"Batido Lemon Pink",price:13000,t:["frutal","acido"]},
       {id:"alegria",name:"Batido Alegría",price:13000,t:["frutal","dulce"]},
@@ -302,11 +303,10 @@ const CARTA = {
     {name:"Empanadas y más",items:[
       {id:"empcarne",name:"Empanada de carne",price:3000,t:["salado","picar"]},
       {id:"emppollo",name:"Empanada de pollo",price:3500,t:["salado","picar"]},
-      {id:"pandebono",name:"Pandebono x2",price:5000,t:["salado","picar"]},
       {id:"arepa",name:"Arepa mixta",price:5000,t:["salado","llenar"]}]},
     {name:"Palitos",items:[
       {id:"palitoqueso",name:"Palito de queso",price:5000,t:["salado","picar"]},
-      {id:"palitobocadillo",name:"Palito de bocadillo y queso",price:5000,t:["salado","picar","dulcesalado"]}]}
+      {id:"palitobocadillo",name:"Palito de bocadillo y queso",price:5500,t:["salado","picar","dulcesalado"]}]}
   ],
   postres:[{items:[
     {id:"socialmm",name:"Social Cream de M&M's",price:8000,badge:"De la casa",t:["postre","postrefrio"]},
@@ -318,11 +318,10 @@ const CARTA = {
     {name:"Cervezas",items:[
       {id:"aguila",name:"Águila",price:3500,t:["cerveza"]},
       {id:"poker",name:"Poker",price:3500,t:["cerveza"]},
-      {id:"costena",name:"Costeña",price:3500,t:["cerveza"]},
       {id:"costenita",name:"Costeñita",price:3000,t:["cerveza"]},
       {id:"club",name:"Club Colombia Dorada",price:4000,t:["cerveza"]},
       {id:"budweiser",name:"Budweiser",price:4000,t:["cerveza"]},
-      {id:"corona",name:"Corona",price:4500,t:["cerveza"]},
+      {id:"corona",name:"Coronita",price:5000,t:["cerveza"]},
       {id:"stella",name:"Stella Artois",price:6000,t:["cerveza"]},
       {id:"redsrose",name:"Red's Rosé",price:5000,t:["cerveza"]},
       {id:"trescordilleras",name:"Tres Cordilleras Rosada",price:5000,t:["cerveza"]},
@@ -542,7 +541,7 @@ const Q = {
   acompanar: () => ({
     title: pickText(["¿Lo acompañas con algo?","¿Y para acompañar?"]),
     opts: [
-      {icon:"salt",  label:"Sí, algo salado", sub:"Pandebono, empanada, palito", why:"Con algo salado", pair:["salado","picar"]},
+      {icon:"salt",  label:"Sí, algo salado", sub:"Empanada, arepa o palito", why:"Con algo salado", pair:["salado","picar"]},
       {icon:"sweet", label:"Sí, algo dulce", sub:"Torta o helado", why:"Con algo dulce", pair:["postre"]},
       {icon:"none",  label:"Solo la bebida", why:"Solo bebida"}
     ]}),
