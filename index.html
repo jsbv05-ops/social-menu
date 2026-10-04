@@ -225,7 +225,7 @@ const CATS = [
 ];
 
 const COCTELES = [
-  {id:"social",name:"Social Drinks",price:22000,badge:"De la casa",glass:"rocks",c1:"#efc688",garnish:"orange",t:["dulce","cremoso"],
+  {id:"social",name:"Social Drinks",price:22000,badge:"De la casa",glass:"rocks",c1:"#efc688",garnish:"orange",t:["dulce","cremoso","tropical"],
    desc:"Tequila, crema de coco, limón, mandarina y leche."},
   {id:"temporada",name:"Tamarindo Aloha",price:22000,badge:"Cóctel de temporada",glass:"highball",c1:"#c9772f",c2:"#8a3f1c",foam:true,garnish:"lime",t:["dulce","acido","tropical"],
    desc:"Este mes: Smirnoff Tamarindo con raspado Aloha.",ing:["Smirnoff Tamarindo","Raspado Aloha"]},
@@ -326,7 +326,8 @@ const CARTA = {
       {id:"stella",name:"Stella Artois",price:6000,t:["cerveza"]},
       {id:"redsrose",name:"Red's Rosé",price:5000,t:["cerveza"]},
       {id:"trescordilleras",name:"Tres Cordilleras Rosada",price:5000,t:["cerveza"]},
-      {id:"colapola",name:"Cola & Pola",price:3000,t:["cerveza"]}]},
+      {id:"colapola",name:"Cola & Pola",price:3000,t:["cerveza"]},
+      {id:"smirnoffice",name:"Smirnoff Ice",price:10000}]},
     {name:"Para tu cerveza",items:[
       {id:"michelada",name:"Michelada",price:3000,d:"Adicional para tu cerveza.",t:["michelada"]},
       {id:"zumolimon",name:"Zumo de limón",price:1500,d:"Adicional."}]},
@@ -351,13 +352,15 @@ const CARTA = {
       {id:"botcaldas8",name:"Ron Caldas 8 años",price:130000},
       {id:"garrafa",name:"Ron Caldas garrafa",price:150000}]},
     {name:"Whisky y más",items:[
-      {id:"smirnoff",name:"Smirnoff Tamarindo",price:75000},
       {id:"buchdeluxe",name:"Buchanan's Deluxe",price:210000},
       {id:"buchmaster",name:"Buchanan's Master",price:230000},
       {id:"doblenegro",name:"Double Black",price:250000},
       {id:"sellonegro",name:"Black Label 1.000 ml",price:240000}]}
   ]
 };
+
+/* Cócteles con más ganancia, de mayor a menor (ids). El cuestionario los recomienda primero. */
+const PRIORIDAD = ["social"];
 
 const FLAVORS = {dulce:"Dulce",acido:"Ácido",amargo:"Amargo",salado:"Salado",cremoso:"Cremoso",tropical:"Tropical"};
 
@@ -652,6 +655,8 @@ function back(){
 function showResult(){
   quiz.list = matches(quiz.pool);
   if(!quiz.list.length) quiz.list = matches(["coctel"]);
+  const rank = x => { const i = PRIORIDAD.indexOf(x.id); return i < 0 ? 99 : i; };
+  quiz.list.sort((a,b) => rank(a) - rank(b));
   quiz.idx = 0;
   quiz.pairItem = quiz.pair ? matches(quiz.pair)[0] : null;
   renderResult();
@@ -660,6 +665,7 @@ function renderResult(){
   const it = quiz.list[quiz.idx % quiz.list.length];
   const alts = quiz.list.filter(x=>x!==it).slice(0,2);
   const hasGlass = it.cat === "cocteles";
+  const casa = quiz.why[0] === "Con alcohol" ? PRIORIDAD.map(id => ALL[id]).find(x => x && !quiz.list.includes(x)) : null;
   $("#sheet-body").innerHTML = `
     <div class="q-step">Te recomendamos</div>
     ${hasGlass?`<div class="detail-art pour">${glassSVG(it)}</div>`:""}
@@ -668,6 +674,7 @@ function renderResult(){
     ${it.desc||it.d?`<p>${it.desc||it.d}</p>`:""}
     ${quiz.pairItem && quiz.pairItem.id!==it.id?`<div class="pair"><span><small>Acompáñalo con</small><b>${quiz.pairItem.name}</b></span><span class="price">${fmt(quiz.pairItem.price)}</span></div>`:""}
     ${alts.length?`<p class="alts">También te puede gustar: ${alts.map(a=>`<button type="button" data-alt="${a.id}">${a.name}</button>`).join(" · ")}</p>`:""}
+    ${casa?`<p class="alts">El favorito de la casa: <button type="button" data-casa="${casa.id}">${casa.name}</button></p>`:""}
     <div class="sheet-foot"><span class="price">${fmt(it.price)}</span>
       <button class="btn pine" type="button" data-toggle-ronda="${it.id}" data-from-quiz>${ICON.heart}${ronda[it.id]?"En tu ronda":"Agregar a mi ronda"}</button></div>
     <div class="q-actions">${quiz.list.length>1?`<button class="btn" type="button" data-qother>Otra opción</button>`:""}<button class="btn ghost" type="button" data-quiz>Empezar de nuevo</button></div>`;
@@ -709,6 +716,7 @@ document.addEventListener("click", e => {
   if(d.qopt !== undefined){ quiz.answers = (quiz.answers||[]).slice(0, quiz.path.length); quiz.answers.push(quiz.cur.q.opts[+d.qopt]); return answer(+d.qopt); }
   if(d.qback !== undefined) return back();
   if(d.qother !== undefined){ quiz.idx++; return renderResult(); }
+  if(d.casa){ quiz.list.unshift(ALL[d.casa]); quiz.idx = 0; return renderResult(); }
   if(d.alt){ quiz.idx = quiz.list.findIndex(x=>x.id===d.alt); return renderResult(); }
   if(d.toggleRonda){ toggleRonda(d.toggleRonda); return d.fromQuiz!==undefined ? renderResult() : ($("#sheet-body").innerHTML = detailHTML(ALL[d.toggleRonda])); }
   if(t.id === "ronda-btn") return openSheet(rondaHTML());
