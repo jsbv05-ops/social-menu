@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0e1110"><meta name="robots" content="noindex">
+<title>Requisición · Social</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e1110;--card:#171b19;--line:#262c29;--pine:#1f5c45;--pine2:#2b7a5c;--txt:#f2f2ef;--mut:#9aa39e;--warn:#e0b14a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:Poppins,system-ui,sans-serif;padding-bottom:110px}
+header{position:sticky;top:0;z-index:5;background:rgba(14,17,16,.94);backdrop-filter:blur(8px);padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;gap:10px}.brand b{font-size:22px;letter-spacing:1px}.brand span{color:var(--pine2);font-weight:600;font-size:13px;letter-spacing:2px}
+.sub{color:var(--mut);font-size:13px;margin-top:2px}
+.row{display:flex;gap:8px;margin-top:10px}
+input,textarea{font:inherit;color:var(--txt);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;width:100%;outline:none}
+input:focus,textarea:focus{border-color:var(--pine2)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 16px 4px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);color:var(--txt);border-radius:99px;padding:7px 12px;font-size:13px;white-space:nowrap}
+.chip .n{background:var(--pine);border-radius:99px;padding:0 7px;margin-left:6px;font-size:12px}
+main{padding:4px 16px}
+section{margin-top:18px}
+h2{font-size:15px;margin:0 0 8px;display:flex;justify-content:space-between;align-items:center}
+h2 small{color:var(--mut);font-weight:400;font-size:12px}
+.item{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 10px 10px 14px;margin-bottom:8px;transition:border-color .15s}
+.item.on{border-color:var(--pine2);background:#14241d}
+.item .nm{flex:1;min-width:0}.item .nm div{font-size:15px;font-weight:500;line-height:1.25}.item .nm small{color:var(--mut);font-size:12px}
+.qty{display:flex;align-items:center;gap:6px}
+.qty button{width:40px;height:40px;border-radius:12px;border:0;background:#222825;color:var(--txt);font-size:22px;line-height:1;font-family:inherit}
+.qty button.plus{background:var(--pine)}
+.qty input{width:52px;text-align:center;padding:8px 4px;font-weight:600;font-size:16px}
+.otro{display:flex;gap:8px;margin-top:6px}.otro button{flex:none;border:0;border-radius:12px;background:var(--pine);color:#fff;font:inherit;font-weight:600;padding:0 14px}
+footer{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 30%)}
+.send{width:100%;border:0;border-radius:16px;background:var(--pine);color:#fff;font:inherit;font-weight:700;font-size:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.send:disabled{background:#2a302d;color:var(--mut)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;z-index:20}
+.modal.show{display:flex}
+.sheet{background:var(--bg);border-top:1px solid var(--line);border-radius:22px 22px 0 0;width:100%;max-height:88vh;overflow:auto;padding:20px 16px calc(20px + env(safe-area-inset-bottom))}
+.sheet h3{margin:0 0 4px}.sum{margin:12px 0;font-size:14px}.sum b{display:block;color:var(--pine2);margin-top:10px}
+.sum div{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:5px 0}
+.btns{display:flex;gap:8px;margin-top:14px}.btns button{flex:1;border-radius:14px;padding:14px;font:inherit;font-weight:600;border:1px solid var(--line);background:var(--card);color:var(--txt)}
+.btns .ok{background:var(--pine);border-color:var(--pine);color:#fff}
+.done{text-align:center;padding:30px 10px}.done .big{font-size:54px}
+.err{color:#ff8a80;font-size:13px;margin-top:8px}
+.empty{color:var(--mut);text-align:center;padding:30px 0}
+</style></head><body>
+<header>
+ <div class="brand"><b>SOCIAL</b><span>REQUISICIÓN</span></div>
+ <div class="sub" id="para"></div>
+ <div class="row"><input id="quien" placeholder="¿Quién hace la requisición?" autocomplete="name"></div>
+ <div class="row"><input id="buscar" placeholder="🔎 Buscar producto" type="search"></div>
+</header>
+<div class="chips" id="chips"></div>
+<main id="lista"></main>
+<main><section><h2>¿Falta algo que no está en la lista?</h2>
+ <div class="otro"><input id="otroN" placeholder="Producto"><input id="otroC" placeholder="Cant." inputmode="decimal" style="width:80px;flex:none"><button id="otroB">Añadir</button></div>
+</section>
+<section><h2>Nota para quien compra</h2><textarea id="nota" rows="2" placeholder="Opcional: marcas, urgencias, etc."></textarea></section></main>
+<footer><button class="send" id="enviar" disabled>Marca lo que hace falta</button></footer>
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+<script>
+/* Lista de productos de Social para la requisición. Formato: [nombre, unidad] */
+const PRODUCTOS = [
+ {cat:"Licores", ico:"🍾", items:[
+  ["Vodka","botella"],["Tequila","botella"],["Ron blanco","botella"],["Ron oscuro","botella"],
+  ["Ron Caldas","botella"],["Ron Caldas 8 años","botella"],["Ron Caldas garrafa","garrafa"],
+  ["Ginebra","botella"],["Whisky coctelería","botella"],["Old Parr","botella"],
+  ["Buchanan's Deluxe","botella"],["Buchanan's Master","botella"],["Black Label 1.000 ml","botella"],["Double Black","botella"],
+  ["Aguardiente Tapa Verde","botella"],["Aguardiente Amarillo","botella"],["Aguardiente Azul","botella"],
+  ["Triple sec","botella"],["Blue curaçao","botella"],["Licor de café","botella"],["Baileys","botella"],
+  ["Campari","botella"],["Vino tinto","botella"]]},
+ {cat:"Cervezas", ico:"🍺", items:[
+  ["Águila","und"],["Poker","und"],["Costeñita","und"],["Club Colombia Dorada","und"],["Budweiser","und"],
+  ["Coronita","und"],["Stella Artois","und"],["Red's Rosé","und"],["Tres Cordilleras Rosada","und"],
+  ["Cola & Pola","und"],["Smirnoff Ice","und"]]},
+ {cat:"Gaseosas y aguas", ico:"🥤", items:[
+  ["Coca-Cola 400 ml","und"],["Coca-Cola Zero 250 ml","und"],["Coca-Cola coctelería","und"],
+  ["Soda Bretaña","und"],["Soda coctelería","und"],["Ginger ale","und"],["Ginger beer","und"],
+  ["Gatorade","und"],["Electrolit maracuyá","und"],["Agua grande","und"],["Agua pequeña","und"]]},
+ {cat:"Frutas y hierbas", ico:"🍋", items:[
+  ["Limón","kg"],["Naranja","kg"],["Mandarina","kg"],["Mango","kg"],["Piña","und"],["Maracuyá","kg"],
+  ["Kiwi","kg"],["Sandía","und"],["Frutos rojos","bolsa"],["Guanábana","kg"],["Liches","lata"],
+  ["Hierbabuena","manojo"],["Jengibre","kg"]]},
+ {cat:"Jarabes y mezcladores", ico:"🧪", items:[
+  ["Sirope simple","botella"],["Sirope de maracuyá","botella"],["Sirope de miel","botella"],
+  ["Almíbar de liches","botella"],["Granadina","botella"],["Crema de coco","lata"],
+  ["Zumo de piña","litro"],["Zumo de naranja","litro"],["Cerezas","frasco"],["Salsa picante","botella"],
+  ["Sal para escarchar","bolsa"],["Azúcar","kg"]]},
+ {cat:"Lácteos y huevos", ico:"🥛", items:[
+  ["Leche","litro"],["Crema de leche","und"],["Huevos","und"],["Helado","tarro"]]},
+ {cat:"Café", ico:"☕", items:[
+  ["Café en grano","kg"],["Milo","tarro"],["Chocolate en polvo","bolsa"],["Endulzante","caja"]]},
+ {cat:"Comida y postres", ico:"🥟", items:[
+  ["Empanadas de carne","und"],["Empanadas de pollo","und"],["Arepas mixtas","und"],
+  ["Palitos de queso","und"],["Palitos de bocadillo y queso","und"],["Torta del día","und"],
+  ["M&M's (Social Cream)","bolsa"],["Insumos Social Cream de Oro","und"]]},
+ {cat:"Hielo", ico:"🧊", items:[["Hielo en cubos","bolsa"],["Hielo triturado","bolsa"]]},
+ {cat:"Desechables y limpieza", ico:"🧻", items:[
+  ["Pitillos SOCIAL","paquete"],["Servilletas","paquete"],["Vasos para llevar","paquete"],["Tapas","paquete"],
+  ["Bolsas de basura","paquete"],["Toallas de papel","rollo"],["Papel higiénico","paquete"],
+  ["Jabón de loza","und"],["Desinfectante","galón"],["Guantes","caja"]]}
+];
+
+/* ====== CONFIGURACIÓN ====== */
+const API = "https://script.google.com/macros/s/AKfycbwz70rhz_RSxq12O-KyLAdIL4HBSPy4oF8l3VIRdvRX6gUJB7QQj5P8beIR4Ui950PT1g/exec";      // URL de la app web de Google Apps Script
+const CLAVE = "social-3b7040f1";  // Debe coincidir con CLAVE en el script
+/* =========================== */
+const $=s=>document.querySelector(s);
+const st={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const DIAS=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],MES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+const man=new Date();man.setDate(man.getDate()+1);
+const fechaTxt=`${DIAS[man.getDay()]} ${man.getDate()} ${MES[man.getMonth()]}`;
+$("#para").textContent="Para mañana, "+fechaTxt;
+let Q=st.get("req_q",{}); let EXTRA=st.get("req_extra",[]);
+$("#quien").value=st.get("req_quien",""); $("#nota").value=st.get("req_nota","");
+const key=(c,n)=>c+"|"+n;
+function save(){st.set("req_q",Q);st.set("req_extra",EXTRA);st.set("req_nota",$("#nota").value);st.set("req_quien",$("#quien").value.trim());}
+function items(){const out=[];PRODUCTOS.forEach(g=>g.items.forEach(([n,u])=>{const q=+Q[key(g.cat,n)]||0;if(q>0)out.push({cat:g.cat,ico:g.ico,producto:n,cantidad:q,unidad:u})}));
+ EXTRA.forEach(e=>out.push({cat:"Otros",ico:"➕",producto:e.n,cantidad:e.c,unidad:""}));return out;}
+function render(){
+ const f=$("#buscar").value.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+ let h="",chips="";
+ PRODUCTOS.forEach((g,gi)=>{
+  const its=g.items.filter(([n])=>!f||n.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").includes(f));
+  const cnt=g.items.filter(([n])=>+Q[key(g.cat,n)]>0).length;
+  chips+=`<button class="chip" data-go="s${gi}">${g.ico} ${g.cat}${cnt?`<span class="n">${cnt}</span>`:""}</button>`;
+  if(!its.length)return;
+  h+=`<section id="s${gi}"><h2>${g.ico} ${g.cat}<small>${cnt?cnt+" marcados":""}</small></h2>`;
+  its.forEach(([n,u])=>{const k=key(g.cat,n),q=+Q[k]||0;
+   h+=`<div class="item${q?" on":""}"><div class="nm"><div>${n}</div><small>${u}</small></div>
+   <div class="qty"><button data-k="${k}" data-d="-1" aria-label="menos">−</button><input data-k="${k}" inputmode="decimal" value="${q||""}" placeholder="0"><button class="plus" data-k="${k}" data-d="1" aria-label="más">+</button></div></div>`});
+  h+=`</section>`;
+ });
+ if(EXTRA.length){h+=`<section><h2>➕ Otros<small>${EXTRA.length}</small></h2>`+EXTRA.map((e,i)=>`<div class="item on"><div class="nm"><div>${esc(e.n)}</div><small>${e.c}</small></div><div class="qty"><button data-x="${i}" aria-label="quitar">×</button></div></div>`).join("")+`</section>`}
+ $("#lista").innerHTML=h||`<div class="empty">No hay productos con ese nombre</div>`; $("#chips").innerHTML=chips; upd();
+}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function upd(){const n=items().length;const b=$("#enviar");b.disabled=!n;b.textContent=n?`Revisar y enviar (${n})`:"Marca lo que hace falta";}
+document.addEventListener("click",e=>{
+ const b=e.target.closest("button");if(!b)return;
+ if(b.dataset.d){const k=b.dataset.k;Q[k]=Math.max(0,(+Q[k]||0)+ +b.dataset.d);if(!Q[k])delete Q[k];save();
+  const it=b.closest(".item"),inp=it.querySelector("input");inp.value=Q[k]||"";it.classList.toggle("on",!!Q[k]);refreshChips();upd();}
+ if(b.dataset.x){EXTRA.splice(+b.dataset.x,1);save();render();}
+ if(b.dataset.go){document.getElementById(b.dataset.go)?.scrollIntoView({behavior:"smooth",block:"start"});}
+});
+function refreshChips(){const sy=$("#chips").scrollLeft;const f=$("#buscar").value;let chips="";PRODUCTOS.forEach((g,gi)=>{const cnt=g.items.filter(([n])=>+Q[key(g.cat,n)]>0).length;chips+=`<button class="chip" data-go="s${gi}">${g.ico} ${g.cat}${cnt?`<span class="n">${cnt}</span>`:""}</button>`});$("#chips").innerHTML=chips;$("#chips").scrollLeft=sy;}
+document.addEventListener("input",e=>{const k=e.target.dataset.k;if(k){const v=parseFloat(String(e.target.value).replace(",","."))||0;if(v>0)Q[k]=v;else delete Q[k];e.target.closest(".item").classList.toggle("on",v>0);save();refreshChips();upd();}});
+$("#buscar").addEventListener("input",render);$("#nota").addEventListener("input",save);$("#quien").addEventListener("input",save);
+$("#otroB").onclick=()=>{const n=$("#otroN").value.trim(),c=$("#otroC").value.trim();if(!n)return;EXTRA.push({n,c:c||"1"});$("#otroN").value="";$("#otroC").value="";save();render();};
+$("#enviar").onclick=()=>{
+ const quien=$("#quien").value.trim();
+ if(!quien){$("#quien").focus();$("#quien").style.borderColor="#e0b14a";$("#quien").placeholder="Escribe tu nombre primero";window.scrollTo({top:0,behavior:"smooth"});return;}
+ const its=items();let h=`<h3>Revisa la requisición</h3><div class="sub">Para ${fechaTxt} · ${esc(quien)}</div><div class="sum">`;let last="";
+ its.forEach(i=>{if(i.cat!==last){h+=`<b>${i.ico} ${i.cat}</b>`;last=i.cat}h+=`<div><span>${esc(i.producto)}</span><span>${i.cantidad} ${i.unidad}</span></div>`});
+ const nota=$("#nota").value.trim();if(nota)h+=`<b>📝 Nota</b><div><span>${esc(nota)}</span></div>`;
+ h+=`</div><div id="err" class="err"></div><div class="btns"><button id="volver">Editar</button><button class="ok" id="conf">Enviar</button></div>`;
+ $("#sheet").innerHTML=h;$("#modal").classList.add("show");
+ $("#volver").onclick=()=>$("#modal").classList.remove("show");
+ $("#conf").onclick=()=>enviar(quien,its,nota);
+};
+async function enviar(quien,its,nota){
+ const c=$("#conf");c.disabled=true;c.textContent="Enviando…";
+ const body={clave:CLAVE,id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),quien,para:fechaTxt,nota,items:its.map(({ico,...r})=>r)};
+ try{
+  if(API.includes("example.invalid")){await new Promise(r=>setTimeout(r,700));}else{const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body)});
+  const j=await r.json(); if(!j.ok)throw new Error(j.error||"Error");}
+  Q={};EXTRA=[];$("#nota").value="";save();render();
+  $("#sheet").innerHTML=`<div class="done"><div class="big">✅</div><h3>Requisición enviada</h3><p class="sub">Quedó en la hoja de cálculo y le llegó al grupo de Telegram.</p><div class="btns"><button class="ok" onclick="document.getElementById('modal').classList.remove('show')">Listo</button></div></div>`;
+ }catch(e){c.disabled=false;c.textContent="Reintentar";$("#err").textContent="No se pudo enviar ("+e.message+"). Revisa el internet y vuelve a intentar; lo marcado no se pierde.";}
+}
+render();
+</script></body></html>
