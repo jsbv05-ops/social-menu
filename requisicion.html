@@ -58,7 +58,7 @@ footer{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(
 <footer><button class="send" id="enviar" disabled>Marca lo que hace falta</button></footer>
 <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
 <script>
-/* Productos de Social por zona, nombres tal cual el inventario */
+/* Productos de Social por zona, nombres tal cual el inventario, sin repetidos */
 const PRODUCTOS = [
 {
 "cat": "Nevera · Bagón 1",
@@ -337,7 +337,7 @@ const PRODUCTOS = [
 ""
 ],
 [
-"Kanaola Sandia",
+"Kanaloa Sandía",
 ""
 ]
 ]
@@ -373,22 +373,6 @@ const PRODUCTOS = [
 ""
 ],
 [
-"Kanaloa Sandía",
-""
-],
-[
-"Kanaloa Coco",
-""
-],
-[
-"Bretaña",
-""
-],
-[
-"Kola Romana",
-""
-],
-[
 "Syrup Blue Curacao",
 ""
 ],
@@ -397,27 +381,11 @@ const PRODUCTOS = [
 ""
 ],
 [
-"Buchana's Deluxe",
-""
-],
-[
-"Aguarduente Antioqueño 750ml",
-""
-],
-[
 "Vodka 700ml",
 ""
 ],
 [
-"Old Parr",
-""
-],
-[
 "Campari",
-""
-],
-[
-"Black Label",
 ""
 ],
 [
@@ -429,15 +397,7 @@ const PRODUCTOS = [
 ""
 ],
 [
-"Ron Viejo Caldas Tradicional",
-""
-],
-[
 "Ron Viejo Caldas Tradicional Grande",
-""
-],
-[
-"Ron Viejo Caldas Carta de Oro",
 ""
 ],
 [
@@ -501,39 +461,11 @@ const PRODUCTOS = [
 ""
 ],
 [
-"Red Label",
-""
-],
-[
-"Ron Viejo de Caldas Tradicional",
-""
-],
-[
-"Bosque de Indias",
-""
-],
-[
 "Malibu",
 ""
 ],
 [
-"Smirnoff de Tamarindo",
-""
-],
-[
-"Jose Cuervo",
-""
-],
-[
 "Syrup Triple Sec",
-""
-],
-[
-"Syrup Grenadine",
-""
-],
-[
-"Syrup Blue Curacao",
 ""
 ],
 [
@@ -570,10 +502,6 @@ const PRODUCTOS = [
 ],
 [
 "Aji",
-""
-],
-[
-"Real Coco",
 ""
 ],
 [
@@ -767,54 +695,6 @@ const PRODUCTOS = [
 "ico": "📦",
 "items": [
 [
-"Smirnoff Rojo",
-""
-],
-[
-"Smirnoff Verde",
-""
-],
-[
-"Stella",
-""
-],
-[
-"Coca Cola 400ml",
-""
-],
-[
-"Coca Cola Zero",
-""
-],
-[
-"Poker",
-""
-],
-[
-"Aguila",
-""
-],
-[
-"Agua Brisa",
-""
-],
-[
-"Coronita",
-""
-],
-[
-"Ron Viejo Caldas Tradicional Grande",
-""
-],
-[
-"Aguardiente Amarillo",
-""
-],
-[
-"Aguardiente Antioqueño 1,05",
-""
-],
-[
 "Aguardiente Antioqueño Tapa Azul",
 ""
 ],
@@ -824,10 +704,6 @@ const PRODUCTOS = [
 ],
 [
 "Aguarduente Antioqueño Todo Verde",
-""
-],
-[
-"Costeñita",
 ""
 ]
 ]
