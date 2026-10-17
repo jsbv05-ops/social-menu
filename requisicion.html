@@ -21,11 +21,11 @@ main{padding:4px 16px}
 section{margin-top:18px}
 h2{font-size:15px;margin:0 0 8px;display:flex;justify-content:space-between;align-items:center}
 h2 small{color:var(--mut);font-weight:400;font-size:12px}
-.item{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 10px 10px 14px;margin-bottom:8px;transition:border-color .15s}
+.item{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 8px 6px 14px;margin-bottom:6px;transition:border-color .15s}
 .item.on{border-color:var(--pine2);background:#14241d}
 .item .nm{flex:1;min-width:0}.item .nm div{font-size:15px;font-weight:500;line-height:1.25}.item .nm small{color:var(--mut);font-size:12px}
 .qty{display:flex;align-items:center;gap:6px}
-.qty button{width:40px;height:40px;border-radius:12px;border:0;background:#222825;color:var(--txt);font-size:22px;line-height:1;font-family:inherit}
+.qty button{width:38px;height:38px;border-radius:12px;border:0;background:#222825;color:var(--txt);font-size:22px;line-height:1;font-family:inherit}
 .qty button.plus{background:var(--pine)}
 .qty input{width:52px;text-align:center;padding:8px 4px;font-weight:600;font-size:16px}
 .otro{display:flex;gap:8px;margin-top:6px}.otro button{flex:none;border:0;border-radius:12px;background:var(--pine);color:#fff;font:inherit;font-weight:600;padding:0 14px}
@@ -58,46 +58,780 @@ footer{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(
 <footer><button class="send" id="enviar" disabled>Marca lo que hace falta</button></footer>
 <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
 <script>
-/* Lista de productos de Social para la requisición. Formato: [nombre, unidad] */
+/* Productos de Social por zona, nombres tal cual el inventario */
 const PRODUCTOS = [
- {cat:"Licores", ico:"🍾", items:[
-  ["Vodka","botella"],["Tequila","botella"],["Ron blanco","botella"],["Ron oscuro","botella"],
-  ["Ron Caldas","botella"],["Ron Caldas 8 años","botella"],["Ron Caldas garrafa","garrafa"],
-  ["Ginebra","botella"],["Whisky coctelería","botella"],["Old Parr","botella"],
-  ["Buchanan's Deluxe","botella"],["Buchanan's Master","botella"],["Black Label 1.000 ml","botella"],["Double Black","botella"],
-  ["Aguardiente Tapa Verde","botella"],["Aguardiente Amarillo","botella"],["Aguardiente Azul","botella"],
-  ["Triple sec","botella"],["Blue curaçao","botella"],["Licor de café","botella"],["Baileys","botella"],
-  ["Campari","botella"],["Vino tinto","botella"]]},
- {cat:"Cervezas", ico:"🍺", items:[
-  ["Águila","und"],["Poker","und"],["Costeñita","und"],["Club Colombia Dorada","und"],["Budweiser","und"],
-  ["Coronita","und"],["Stella Artois","und"],["Red's Rosé","und"],["Tres Cordilleras Rosada","und"],
-  ["Cola & Pola","und"],["Smirnoff Ice","und"]]},
- {cat:"Gaseosas y aguas", ico:"🥤", items:[
-  ["Coca-Cola 400 ml","und"],["Coca-Cola Zero 250 ml","und"],["Coca-Cola coctelería","und"],
-  ["Soda Bretaña","und"],["Soda coctelería","und"],["Ginger ale","und"],["Ginger beer","und"],
-  ["Gatorade","und"],["Electrolit maracuyá","und"],["Agua grande","und"],["Agua pequeña","und"]]},
- {cat:"Frutas y hierbas", ico:"🍋", items:[
-  ["Limón","kg"],["Naranja","kg"],["Mandarina","kg"],["Mango","kg"],["Piña","und"],["Maracuyá","kg"],
-  ["Kiwi","kg"],["Sandía","und"],["Frutos rojos","bolsa"],["Guanábana","kg"],["Liches","lata"],
-  ["Hierbabuena","manojo"],["Jengibre","kg"]]},
- {cat:"Jarabes y mezcladores", ico:"🧪", items:[
-  ["Sirope simple","botella"],["Sirope de maracuyá","botella"],["Sirope de miel","botella"],
-  ["Almíbar de liches","botella"],["Granadina","botella"],["Crema de coco","lata"],
-  ["Zumo de piña","litro"],["Zumo de naranja","litro"],["Cerezas","frasco"],["Salsa picante","botella"],
-  ["Sal para escarchar","bolsa"],["Azúcar","kg"]]},
- {cat:"Lácteos y huevos", ico:"🥛", items:[
-  ["Leche","litro"],["Crema de leche","und"],["Huevos","und"],["Helado","tarro"]]},
- {cat:"Café", ico:"☕", items:[
-  ["Café en grano","kg"],["Milo","tarro"],["Chocolate en polvo","bolsa"],["Endulzante","caja"]]},
- {cat:"Comida y postres", ico:"🥟", items:[
-  ["Empanadas de carne","und"],["Empanadas de pollo","und"],["Arepas mixtas","und"],
-  ["Palitos de queso","und"],["Palitos de bocadillo y queso","und"],["Torta del día","und"],
-  ["M&M's (Social Cream)","bolsa"],["Insumos Social Cream de Oro","und"]]},
- {cat:"Hielo", ico:"🧊", items:[["Hielo en cubos","bolsa"],["Hielo triturado","bolsa"]]},
- {cat:"Desechables y limpieza", ico:"🧻", items:[
-  ["Pitillos SOCIAL","paquete"],["Servilletas","paquete"],["Vasos para llevar","paquete"],["Tapas","paquete"],
-  ["Bolsas de basura","paquete"],["Toallas de papel","rollo"],["Papel higiénico","paquete"],
-  ["Jabón de loza","und"],["Desinfectante","galón"],["Guantes","caja"]]}
+{
+"cat": "Nevera · Bagón 1",
+"ico": "🧊",
+"items": [
+[
+"Buchanan's Deluxe",
+""
+],
+[
+"Buchanan's Master",
+""
+],
+[
+"Black Label",
+""
+],
+[
+"Double Black",
+""
+],
+[
+"Aguardiente Antioqueño 1,05L",
+""
+],
+[
+"Aguardiente Amarillo",
+""
+],
+[
+"Gatorade",
+""
+],
+[
+"Red's Rose",
+""
+],
+[
+"Cola Pola",
+""
+],
+[
+"Agua Pequeña",
+""
+],
+[
+"Jugo de Naranja",
+""
+],
+[
+"Jugo de Mandarina",
+""
+],
+[
+"Leche Condensada",
+""
+],
+[
+"Arandanos",
+""
+],
+[
+"Frutos Rojos",
+""
+],
+[
+"Crema Chantilli",
+""
+],
+[
+"Hierba buena",
+""
+],
+[
+"Ginger beer",
+""
+],
+[
+"Flores",
+""
+],
+[
+"Zumo de Limon",
+""
+],
+[
+"Kola Romana",
+""
+],
+[
+"Coca Cola 250ml",
+""
+],
+[
+"Limones",
+""
+],
+[
+"Kiwis",
+""
+],
+[
+"Piña",
+""
+],
+[
+"Palitos de Queso",
+""
+],
+[
+"Palitos de Bocadillo con Queso",
+""
+],
+[
+"Empanadas de Carne",
+""
+],
+[
+"Empanadas de Pollo",
+""
+],
+[
+"Arepas mixtas",
+""
+],
+[
+"Torta de Chocolate con Cukies and Cream",
+""
+],
+[
+"Torta de Durazno",
+""
+]
+]
+},
+{
+"cat": "Nevera · Bagón 2",
+"ico": "🧊",
+"items": [
+[
+"Ron Viejo de Caldas Carta de Oro",
+""
+],
+[
+"Aguardiente Antioqueño 750ml",
+""
+],
+[
+"Aguardiente Antioqueño 750ml Verde",
+""
+],
+[
+"Ron Viejo de Caldas Tradicional",
+""
+],
+[
+"Old Parr",
+""
+],
+[
+"Smirnoff Tamarindo",
+""
+],
+[
+"Agua Brisa",
+""
+],
+[
+"Coca Cola Zero",
+""
+],
+[
+"Coca Cola 400ml",
+""
+],
+[
+"Bretaña",
+""
+],
+[
+"Ginger",
+""
+],
+[
+"Pan de Bono",
+""
+],
+[
+"Lychees",
+""
+],
+[
+"Jarra de Cafe",
+""
+],
+[
+"Jarra de Maracuya",
+""
+],
+[
+"Pulpas de Maracuya",
+""
+]
+]
+},
+{
+"cat": "Nevera · Bagón 3",
+"ico": "🧊",
+"items": [
+[
+"Stella",
+""
+],
+[
+"Smirnoff Verde",
+""
+],
+[
+"Smirnoff Rojo",
+""
+],
+[
+"Coronita",
+""
+],
+[
+"Budweiser",
+""
+],
+[
+"Modelo",
+""
+],
+[
+"Costeñita",
+""
+],
+[
+"Aguila",
+""
+],
+[
+"Club Colombia",
+""
+],
+[
+"Poker",
+""
+],
+[
+"Jugo del Valle",
+""
+],
+[
+"Leche 1.100ml",
+""
+],
+[
+"Baileys",
+""
+],
+[
+"Sirop de Kiwi",
+""
+],
+[
+"Sirop de Passion Fruit",
+""
+],
+[
+"Sirop de Mango",
+""
+],
+[
+"Kanaloa Coco",
+""
+],
+[
+"Kanaola Sandia",
+""
+]
+]
+},
+{
+"cat": "Carrito Mini",
+"ico": "🛒",
+"items": [
+[
+"Real Coco",
+""
+],
+[
+"Electrolic",
+""
+]
+]
+},
+{
+"cat": "Vitrina",
+"ico": "🍾",
+"items": [
+[
+"Papas Sal Rosada Himalaya",
+""
+],
+[
+"Limon Deshidratado",
+""
+],
+[
+"Naranja Deshidratada",
+""
+],
+[
+"Kanaloa Sandía",
+""
+],
+[
+"Kanaloa Coco",
+""
+],
+[
+"Bretaña",
+""
+],
+[
+"Kola Romana",
+""
+],
+[
+"Syrup Blue Curacao",
+""
+],
+[
+"Sirup Granadine",
+""
+],
+[
+"Buchana's Deluxe",
+""
+],
+[
+"Aguarduente Antioqueño 750ml",
+""
+],
+[
+"Vodka 700ml",
+""
+],
+[
+"Old Parr",
+""
+],
+[
+"Campari",
+""
+],
+[
+"Black Label",
+""
+],
+[
+"Jose Cuervo",
+""
+],
+[
+"Viña Maipo",
+""
+],
+[
+"Ron Viejo Caldas Tradicional",
+""
+],
+[
+"Ron Viejo Caldas Tradicional Grande",
+""
+],
+[
+"Ron Viejo Caldas Carta de Oro",
+""
+],
+[
+"Red Label",
+""
+],
+[
+"Bosque de Indias",
+""
+],
+[
+"Cafe Grano Dorado",
+""
+]
+]
+},
+{
+"cat": "Congelador",
+"ico": "❄️",
+"items": [
+[
+"Hielo",
+""
+],
+[
+"Mora",
+""
+],
+[
+"Fresa",
+""
+],
+[
+"Pulpas de Guanabana",
+""
+],
+[
+"Pulpas de Mango",
+""
+]
+]
+},
+{
+"cat": "Vitrina de Cocteles",
+"ico": "🍸",
+"items": [
+[
+"Convier Triple Sec",
+""
+],
+[
+"Licor de Cafe",
+""
+],
+[
+"Vodka",
+""
+],
+[
+"Ron Viejo de Caldas Roble Blanco",
+""
+],
+[
+"Red Label",
+""
+],
+[
+"Ron Viejo de Caldas Tradicional",
+""
+],
+[
+"Bosque de Indias",
+""
+],
+[
+"Malibu",
+""
+],
+[
+"Smirnoff de Tamarindo",
+""
+],
+[
+"Jose Cuervo",
+""
+],
+[
+"Syrup Triple Sec",
+""
+],
+[
+"Syrup Grenadine",
+""
+],
+[
+"Syrup Blue Curacao",
+""
+],
+[
+"Vasos 9oz",
+""
+],
+[
+"Vasos 16oz",
+""
+],
+[
+"Tapas",
+""
+],
+[
+"Azucar Rosada",
+""
+],
+[
+"Azucar Morada",
+""
+],
+[
+"Azucar Verde",
+""
+],
+[
+"Ojos",
+""
+],
+[
+"Miel",
+""
+],
+[
+"Aji",
+""
+],
+[
+"Real Coco",
+""
+],
+[
+"Tajín",
+""
+],
+[
+"Chamoy",
+""
+],
+[
+"Palitos para decorar",
+""
+]
+]
+},
+{
+"cat": "Mesón",
+"ico": "🧂",
+"items": [
+[
+"Te Verde con Piña",
+""
+],
+[
+"Frutos del Bosque",
+""
+],
+[
+"Milo",
+""
+],
+[
+"Azucar",
+""
+],
+[
+"Huevos",
+""
+],
+[
+"Sal",
+""
+],
+[
+"Azucar de Bolsita",
+""
+],
+[
+"Palitos de Cafe",
+""
+],
+[
+"Potecitos de Tartara",
+""
+],
+[
+"Cucharitas",
+""
+],
+[
+"Cucharas Negras",
+""
+],
+[
+"Pitillos de Bambu",
+""
+],
+[
+"Bolsas Negras",
+""
+],
+[
+"Bolsas de Carton",
+""
+],
+[
+"Portas de Torta Negros",
+""
+],
+[
+"Oreo",
+""
+],
+[
+"MyM",
+""
+],
+[
+"Salsa de Chocolate",
+""
+],
+[
+"Salsa de Caramelo",
+""
+],
+[
+"Mezcla para Helado",
+""
+],
+[
+"Leche Klim",
+""
+],
+[
+"Servilletas",
+""
+],
+[
+"Servilletas de Cocina",
+""
+]
+]
+},
+{
+"cat": "Caja de Aseo",
+"ico": "🧽",
+"items": [
+[
+"Desinfectante de Bicarbonato",
+""
+],
+[
+"Limpido",
+""
+],
+[
+"Jabon en Polvo",
+""
+],
+[
+"Toallas Humedas Arruru",
+""
+],
+[
+"Toallas Humedas Desinfectantes",
+""
+],
+[
+"Desengrasante",
+""
+],
+[
+"Varsol Emulsionado",
+""
+],
+[
+"Guantes",
+""
+],
+[
+"Bolsas de Basura",
+""
+],
+[
+"Esponjas de Lavar Loza",
+""
+],
+[
+"Jabon de Lavar Loza en Taza",
+""
+],
+[
+"Jabon de Lavar Loza Liquido",
+""
+],
+[
+"Veneno",
+""
+],
+[
+"Toallas para Limpiar",
+""
+],
+[
+"Limpiavidrios",
+""
+],
+[
+"Lapiceros",
+""
+],
+[
+"Papel para Comandas",
+""
+]
+]
+},
+{
+"cat": "Bodega que está en el piso",
+"ico": "📦",
+"items": [
+[
+"Smirnoff Rojo",
+""
+],
+[
+"Smirnoff Verde",
+""
+],
+[
+"Stella",
+""
+],
+[
+"Coca Cola 400ml",
+""
+],
+[
+"Coca Cola Zero",
+""
+],
+[
+"Poker",
+""
+],
+[
+"Aguila",
+""
+],
+[
+"Agua Brisa",
+""
+],
+[
+"Coronita",
+""
+],
+[
+"Ron Viejo Caldas Tradicional Grande",
+""
+],
+[
+"Aguardiente Amarillo",
+""
+],
+[
+"Aguardiente Antioqueño 1,05",
+""
+],
+[
+"Aguardiente Antioqueño Tapa Azul",
+""
+],
+[
+"Aguardiente Antioqueño Tapa Verde",
+""
+],
+[
+"Aguarduente Antioqueño Todo Verde",
+""
+],
+[
+"Costeñita",
+""
+]
+]
+}
 ];
 
 /* ====== CONFIGURACIÓN ====== */
@@ -126,7 +860,7 @@ function render(){
   if(!its.length)return;
   h+=`<section id="s${gi}"><h2>${g.ico} ${g.cat}<small>${cnt?cnt+" marcados":""}</small></h2>`;
   its.forEach(([n,u])=>{const k=key(g.cat,n),q=+Q[k]||0;
-   h+=`<div class="item${q?" on":""}"><div class="nm"><div>${n}</div><small>${u}</small></div>
+   h+=`<div class="item${q?" on":""}"><div class="nm"><div>${n}</div>${u?`<small>${u}</small>`:""}</div>
    <div class="qty"><button data-k="${k}" data-d="-1" aria-label="menos">−</button><input data-k="${k}" inputmode="decimal" value="${q||""}" placeholder="0"><button class="plus" data-k="${k}" data-d="1" aria-label="más">+</button></div></div>`});
   h+=`</section>`;
  });
