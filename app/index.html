@@ -84,6 +84,8 @@ button:focus-visible{outline:2px solid var(--sage);outline-offset:2px}
 header.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 4px 12px}
 header.top img{height:24px}
 .clock{font:700 14px var(--mono);letter-spacing:1px;text-align:right}
+.sy{display:inline-block;width:6px;height:6px;border-radius:50%;background:#3a3c39;vertical-align:1px;margin-left:4px}
+.sy.ok{background:#7fd0a9;box-shadow:0 0 5px #7fd0a9}.sy.busy{background:var(--amber)}.sy.off{background:var(--red)}
 .clock small{display:block;font-weight:400;color:var(--mut);font-size:10px;letter-spacing:2px}
 h2.scr{font:700 11px var(--mono);letter-spacing:3px;color:var(--mut);margin:18px 4px 8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
 h2.scr b{color:var(--fg)}
@@ -253,7 +255,9 @@ nav.tabs .dot.red{background:var(--red);box-shadow:0 0 6px var(--red)}
 
 <script>
 /* =================== Datos =================== */
-const KEY="socialapp_v2";
+const KEY="socialapp_v3";
+const SYNC_URL="https://script.google.com/macros/s/AKfycbzvw8TvV-YjhiMt2n1akTVIOjz1z7Cdz-QzY8gDkEnF-IRFs9AOmyVAtGVVl3Wyey2c/exec";
+const COLS=["reqs","bills","meetings","tasks","crew","closes"];
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -270,18 +274,18 @@ const sdate=s=>{if(!s)return"";const d=new Date(s+"T00:00:00");return d.getDate(
 function seedCrew(){
   const t=iso(today());
   return [
-    {id:uid(),name:"Juan Beltrán",role:"Chef · Asesoría",freq:"mensual",base:0,entries:[]},
-    {id:uid(),name:"Leyla",role:"Contadora",freq:"mensual",base:0,entries:[]},
-    {id:uid(),name:"Jeanca",role:"Cargo por definir",freq:"quincenal",base:0,entries:[]},
-    {id:uid(),name:"Liseth",role:"Cargo por definir",freq:"quincenal",base:0,entries:[]},
-    {id:uid(),name:"Otros gastos",role:"Gastos varios de Social",freq:"variable",base:0,kind:"gasto",entries:[]}
+    {id:"crew-juan",name:"Juan Beltrán",role:"Chef · Asesoría",freq:"mensual",base:0,entries:[]},
+    {id:"crew-leyla",name:"Leyla",role:"Contadora",freq:"mensual",base:0,entries:[]},
+    {id:"crew-jeanca",name:"Jeanca",role:"Cargo por definir",freq:"quincenal",base:0,entries:[]},
+    {id:"crew-liseth",name:"Liseth",role:"Cargo por definir",freq:"quincenal",base:0,entries:[]},
+    {id:"crew-otros",name:"Otros gastos",role:"Gastos varios de Social",freq:"variable",base:0,kind:"gasto",entries:[]}
   ];
 }
 function seed(){
   const t=today(), d=n=>{const x=new Date(t);x.setDate(x.getDate()+n);return iso(x)};
   return {
     reqs:[],
-    bills:["Arriendo","Luz","Agua","Internet"].map(n=>({id:uid(),name:n,day:1,amount:"",setup:true,paid:{}})),
+    bills:["Arriendo","Luz","Agua","Internet"].map(n=>({id:"bill-"+n.toLowerCase(),name:n,day:1,amount:"",setup:true,paid:{}})),
     meetings:[],
     tasks:[],
     crew:seedCrew(), closes:[], billsHint:true
@@ -292,7 +296,51 @@ if(!S) S=seed();
 if(!S.crew) S.crew=seedCrew();
 if(!S.closes) S.closes=[];
 S.bills=S.bills.filter(b=>!(b.name==="Gas"&&b.setup));
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+if(!S.del) S.del={};
+/* ---- Sincronización entre dispositivos (Google Sheets) ----
+   Cada registro lleva "u" (última edición). Se compara con la última versión conocida (base)
+   para marcar solo lo que cambió en este dispositivo; el servidor une por id y gana lo más reciente. */
+let base={}; try{base=JSON.parse(localStorage.getItem(KEY+"_base"))||null}catch(e){base=null}
+const body=x=>{const {u,...r}=x;return JSON.stringify(r)};
+function rebase(){base={};COLS.forEach(c=>S[c].forEach(x=>base[x.id]=body(x)))}
+if(!base) rebase();
+function stamp(){const now=Date.now(),seen=new Set();
+  COLS.forEach(c=>S[c].forEach(x=>{seen.add(x.id);const j=body(x);if(base[x.id]!==j){x.u=now;base[x.id]=j}}));
+  Object.keys(base).forEach(id=>{if(!seen.has(id)){S.del[id]=now;delete base[id]}});}
+const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));localStorage.setItem(KEY+"_base",JSON.stringify(base))}catch(e){}};
+let syncT=null, syncing=false, again=false, pending=null, syncState="";
+const save=()=>{stamp();saveLocal();clearTimeout(syncT);syncT=setTimeout(sync,900)};
+function setSync(st){syncState=st;const el=document.getElementById("sy");if(el){el.className="sy "+st;el.title=st}}
+async function sync(){
+  if(!SYNC_URL.startsWith("http"))return;
+  if(syncing){again=true;return}
+  syncing=true;setSync("busy");
+  try{
+    stamp();saveLocal();
+    const state={del:S.del};COLS.forEach(c=>state[c]=S[c]);
+    const r=await fetch(SYNC_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({state})});
+    const m=await r.json(); if(!m||!m.crew)throw new Error("bad");
+    pending=m; applyRemote(); setSync("ok");
+  }catch(e){setSync("off")}
+  syncing=false; if(again){again=false;sync()}
+}
+/* une dos estados: por id gana la edición más reciente; los borrados también viajan */
+function merge(A,B){const del=Object.assign({},A.del||{});Object.keys(B.del||{}).forEach(k=>del[k]=Math.max(del[k]||0,B.del[k]));
+  const r={del};COLS.forEach(c=>{const map={},order=[];(A[c]||[]).concat(B[c]||[]).forEach(x=>{if(!x||!x.id)return;const o=map[x.id];if(!o)order.push(x.id);if(!o||(x.u||0)>(o.u||0))map[x.id]=x});
+  r[c]=order.map(id=>map[id]).filter(x=>!(del[x.id]&&del[x.id]>=(x.u||0)))});return r}
+function busyUI(){const a=document.activeElement;return !$("#sheetBg").hidden||(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))}
+function applyRemote(){
+  if(!pending)return; if(busyUI())return;
+  stamp();
+  const m=merge(pending,S);pending=null;
+  const before=JSON.stringify(COLS.map(c=>S[c]));
+  COLS.forEach(c=>S[c]=m[c]); S.del=m.del;
+  rebase(); saveLocal();
+  if(before!==JSON.stringify(COLS.map(c=>S[c]))&&!$("#app").hidden){const y=scrollY;render();scrollTo(0,y)}
+}
+setInterval(()=>{if(document.visibilityState==="visible"&&!busyUI())sync()},15000);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")sync()});
+addEventListener("online",sync);
 
 /* =================== Cálculos =================== */
 function billStatus(b){
@@ -366,7 +414,7 @@ function horizon(owed){
 
 /* =================== Pantallas =================== */
 let tab="panel", openReqId=null, openCrewId=null, period="quincena", torreView="agenda";
-function header(sub){const d=new Date();return `<header class="top"><img src="logo.png" alt="SOCIAL"><div class="clock">${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}<small>${sub}</small></div></header>`}
+function header(sub){const d=new Date();return `<header class="top"><img src="logo.png" alt="SOCIAL"><div class="clock">${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}<small>${sub} <span id="sy" class="sy ${syncState}"></span></small></div></header>`}
 function lamps(st){
   const L=(on,cls,txt)=>`<div class="lamp ${on?cls:""}">${txt}</div>`;
   return `<div class="plate bolts" style="padding:18px 14px 14px"><div class="annun">
@@ -520,7 +568,7 @@ function sheet(html,onSubmit){
   $("#sheetBg").hidden=false;
   $("#sf").onsubmit=e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target));if(onSubmit(f)!==false){closeSheet();save();keep(()=>{})}};
 }
-function closeSheet(){$("#sheetBg").hidden=true;$("#sheet").innerHTML=""}
+function closeSheet(){$("#sheetBg").hidden=true;$("#sheet").innerHTML="";setTimeout(applyRemote,50)}
 function confirmBox(title,txt,act,label){$("#sheet").innerHTML=`<h3>${title}</h3><div class="note">${txt}</div><div class="bar"><button class="btn" data-act="closeSheet" style="flex:1">CANCELAR</button><button class="btn ${label==="ENVIAR"?"primary":"warn"}" data-act="${act}" style="flex:1">${label}</button></div>`;$("#sheetBg").hidden=false}
 $("#sheetBg").addEventListener("click",e=>{if(e.target.id==="sheetBg")closeSheet()});
 
@@ -721,7 +769,7 @@ function capitana(){
    <button class="btn ghost" data-act="closeSheet" style="color:var(--mut)">MÁS TARDE (BAJO MI RIESGO)</button></div>`;
   $("#sheetBg").hidden=false;
 }
-$("#startBtn").onclick=()=>{buzz();$("#hello").hidden=true;$("#app").hidden=false;$("#tabs").hidden=false;render();setTimeout(capitana,700)};
+$("#startBtn").onclick=()=>{buzz();$("#hello").hidden=true;$("#app").hidden=false;$("#tabs").hidden=false;render();sync();setTimeout(capitana,700)};
 setInterval(()=>{const a=document.activeElement;if(!$("#app").hidden&&$("#sheetBg").hidden&&!(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)))keep(()=>{})},60000);
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>
