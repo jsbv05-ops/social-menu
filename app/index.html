@@ -332,7 +332,10 @@ function busyUI(){const a=document.activeElement;return !$("#sheetBg").hidden||(
 function applyRemote(){
   if(!pending)return; if(busyUI())return;
   stamp();
+  const had=new Set(S.reqs.map(r=>r.id));
   const m=merge(pending,S);pending=null;
+  const nuevas=m.reqs.filter(r=>!had.has(r.id)&&!r.sent);
+  if(nuevas.length&&had.size+S.reqs.length>=0)setTimeout(()=>{toast("LOAD RECEIVED · "+nuevas.map(r=>r.from.split(" · ")[0]).join(", ").toUpperCase());buzz()},300);
   const before=JSON.stringify(COLS.map(c=>S[c]));
   COLS.forEach(c=>S[c]=m[c]); S.del=m.del;
   rebase(); saveLocal();
@@ -466,6 +469,7 @@ function vChecklist(r){
   <div class="plate bolts"><div class="t" style="font-weight:700;padding:0 10px">${esc(r.from)}${r.ex?'<span class="ex">EJEMPLO</span>':""}</div>
    <div class="kv"><div><span>COMPRADO</span><b class="c-green">${b}</b></div><div><span>NO DISP.</span><b class="c-amber">${na}</b></div><div><span>PENDIENTE</span><b>${n-d}</b></div></div>
    <div class="progress" style="margin-top:10px"><i style="width:${n?d/n*100:0}%"></i></div>
+   ${r.memo?`<div class="note" style="margin-top:10px;color:var(--fg)"><span class="etch">NOTA DE QUIEN PIDE</span><br>${esc(r.memo)}</div>`:""}
    <div class="note" style="margin-top:10px">Desliza el interruptor cuando lo compres. Si no lo encontraste, oprime <b>N/D</b>.</div></div>
   ${zones.map(z=>`<div class="zone">${esc(z).toUpperCase()}</div><div class="list">${r.items.filter(i=>(i.zone||"Otros")===z).map(i=>`
     <div class="row ${i.status!=="pending"?"done":""}"><div class="main"><div class="t">${esc(i.name)}</div><div class="s">${esc(i.qty||"")}${i.status==="na"?' · <span class="c-amber">NO DISPONIBLE</span>':i.status==="bought"?' · <span class="c-green">COMPRADO</span>':""}</div></div>
