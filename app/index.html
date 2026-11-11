@@ -59,10 +59,23 @@ button:focus-visible{outline:2px solid var(--sage);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){#rig,#small,#stream,#logoGhost,#liquid,#tag{animation-duration:.01s!important;animation-delay:0s!important}}
 
 /* ---------- Saludo ---------- */
-#hello{position:fixed;inset:0;z-index:90;background:#000;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;padding:24px;text-align:center}
+#hello{position:fixed;inset:0;z-index:90;background:radial-gradient(90% 50% at 50% 100%,#0d1a14,#000 70%);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px;padding:24px 16px 170px;text-align:center;overflow:hidden}
+.fids{width:100%;max-width:380px;margin-top:14px;background:linear-gradient(180deg,#121312,#0a0b0a);border:1px solid #000;border-radius:6px;padding:10px 10px 8px;box-shadow:inset 0 1px 0 #ffffff12,0 10px 30px #000}
+.fids-h{display:flex;justify-content:space-between;font:700 9px var(--mono);letter-spacing:2px;color:var(--amber);margin:0 2px 8px}
+.fids-h b{color:var(--fg)}
+.fr{display:grid;grid-template-columns:52px 1fr 26px 86px;gap:6px;align-items:center;margin-top:5px;text-align:left}
+.fr.hd{font:700 7.5px var(--mono);letter-spacing:1.5px;color:var(--mut);margin:0}
+.flap{display:flex;gap:1px}
+.flap i{font:700 10.5px/17px var(--mono);font-style:normal;width:10px;height:17px;text-align:center;color:#f2eee4;background:linear-gradient(180deg,#232423 49%,#000 50%,#1a1b1a 51%);border-radius:2px}
+.flap.st i{color:var(--amber)}
+.flap.ok i{color:#9ccdb5}
+.runway{position:absolute;left:0;right:0;bottom:0;height:160px;pointer-events:none}
+.runway .rab{animation:rab 1.4s linear infinite;opacity:.08}
+@keyframes rab{0%,6%{opacity:1}14%,100%{opacity:.08}}
+.runway .edge{filter:drop-shadow(0 0 3px #ffe6b0)}
 #hello[hidden]{display:none}
-#hello img{width:170px}
-#hello h1{font:700 18px var(--mono);letter-spacing:3px;margin:18px 0 0}
+#hello img{width:150px}
+#hello h1{font:700 17px var(--mono);letter-spacing:3px;margin:8px 0 0}
 #hello p{margin:0;color:var(--mut);line-height:1.7;font-size:14px}
 #hello .sys{font:11px var(--mono);color:var(--dim);letter-spacing:2px;margin-top:6px}
 
@@ -111,6 +124,13 @@ h2.scr b{color:var(--fg)}
 .empty{color:var(--mut);text-align:center;font:12px/1.7 var(--mono);padding:24px 10px;border:1px dashed #2a2b2a;border-radius:6px}
 
 /* Interruptor de palanca de avión */
+.sw{flex:none;width:60px;height:32px;border-radius:16px;border:1px solid #000;padding:0;position:relative;background:linear-gradient(180deg,#070807,#151615);box-shadow:inset 0 2px 6px #000,0 1px 0 #ffffff12;transition:background .25s,box-shadow .25s}
+.sw i{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 38% 30%,#fbfbf8,#a9adaa 55%,#5b5e5c);box-shadow:0 2px 4px #000,inset 0 -1px 2px #0005;transition:transform .22s cubic-bezier(.4,1.4,.6,1)}
+.sw::after{content:"OFF";position:absolute;right:8px;top:10px;font:700 8px var(--mono);letter-spacing:1px;color:#3e403d}
+.sw.on{background:linear-gradient(180deg,#1d5a42,#2f8060);box-shadow:inset 0 2px 5px #0007,0 0 14px #3f9a7466,0 0 2px #7fd0a9}
+.sw.on::after{content:"OK";left:9px;right:auto;color:#e6f5ec;text-shadow:0 0 6px #b9f0d3}
+.sw.on i{transform:translateX(28px)}
+.sw[disabled]{opacity:.5}
 .tog{flex:none;width:40px;height:52px;position:relative;border:0;background:none;padding:0}
 .tog::before{content:"";position:absolute;left:8px;top:14px;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#9a9d98,#3d3f3c 60%,#1b1c1b);box-shadow:0 2px 4px #000,inset 0 0 0 3px #2a2b2a}
 .tog i{position:absolute;left:16px;top:26px;width:8px;height:24px;border-radius:4px 4px 3px 3px;background:linear-gradient(90deg,#6f726d,#e9ebe7 45%,#8d908b);box-shadow:0 2px 3px #000a;transform-origin:50% 0;transform:rotate(0deg);transition:transform .16s}
@@ -134,7 +154,7 @@ h2.scr b{color:var(--fg)}
 .fab{position:fixed;right:14px;bottom:calc(86px + env(safe-area-inset-bottom));z-index:20}
 
 /* Barra inferior */
-nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--noise),linear-gradient(180deg,#151615,#0a0b0a);border-top:1px solid #000;box-shadow:inset 0 1px 0 #ffffff12;display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--noise),linear-gradient(180deg,#151615,#0a0b0a);border-top:1px solid #000;box-shadow:inset 0 1px 0 #ffffff12;display:grid;grid-template-columns:repeat(6,1fr);padding:6px 2px calc(6px + env(safe-area-inset-bottom))}
 nav.tabs button{background:none;border:0;padding:6px 2px 4px;display:grid;justify-items:center;gap:4px;font:700 8.5px var(--mono);letter-spacing:1px;color:var(--mut);position:relative}
 nav.tabs button svg{width:22px;height:22px}
 nav.tabs button::after{content:"";width:18px;height:3px;border-radius:2px;background:#1e201f}
@@ -207,9 +227,15 @@ nav.tabs .dot.red{background:var(--red);box-shadow:0 0 6px var(--red)}
 <div id="hello" hidden>
   <img src="logo.png" alt="SOCIAL Drinks and Coffee">
   <h1 id="helloTitle">BUENAS NOCHES, CAPITÁN.</h1>
-  <p>La cabina está lista. Los sistemas están en línea.<br>Las operaciones de Social esperan autorización.</p>
-  <button class="btn primary" id="startBtn" style="margin-top:22px;padding:16px 28px;font-size:12px;letter-spacing:3px">INICIAR OPERACIONES</button>
-  <div class="sys">SISTEMA ONLINE · BASE SOCIAL DRINKS &amp; COFFEE</div>
+  <p>Pista despejada. Torre autoriza el despegue.</p>
+  <div class="fids" aria-label="Tablero de salidas">
+    <div class="fids-h"><span>SALIDAS · DEPARTURES</span><b id="fidsClock">--:--</b></div>
+    <div class="fr hd"><span>VUELO</span><span>DESTINO</span><span>PTA</span><span>ESTADO</span></div>
+    <div id="fidsRows"></div>
+  </div>
+  <button class="btn primary" id="startBtn" style="margin-top:16px;padding:16px 28px;font-size:12px;letter-spacing:3px">INICIAR OPERACIONES</button>
+  <div class="sys">BGA · BASE SOCIAL DRINKS &amp; COFFEE</div>
+  <svg class="runway" id="runway" viewBox="0 0 390 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg>
 </div>
 
 <main id="app" hidden></main>
@@ -217,8 +243,9 @@ nav.tabs .dot.red{background:var(--red);box-shadow:0 0 6px var(--red)}
 <nav class="tabs" id="tabs" hidden>
   <button data-tab="panel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="13" r="8"/><path d="M12 13l4-4"/></svg>PANEL</button>
   <button data-tab="carga"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 7h18l-2 12H5L3 7zM8 7V5a4 4 0 018 0v2"/></svg>CARGA</button>
-  <button data-tab="crew"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.6 3-5.5 6-5.5s5.4 1.9 6 5.5M16 5.5a3 3 0 010 5.6M18 14.8c1.8.7 2.8 2.4 3.1 5.2"/></svg>TRIPULACIÓN</button>
-  <button data-tab="fuel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 21V5a2 2 0 012-2h6a2 2 0 012 2v16M3 21h14M15 9h2a2 2 0 012 2v6a1.5 1.5 0 003 0V8l-3-3M8 7h4"/></svg>COMBUSTIBLE</button>
+  <button data-tab="crew"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.6 3-5.5 6-5.5s5.4 1.9 6 5.5M16 5.5a3 3 0 010 5.6M18 14.8c1.8.7 2.8 2.4 3.1 5.2"/></svg>NÓMINA</button>
+  <button data-tab="spoiler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="9" width="18" height="11" rx="1.5"/><path d="M6 9V5h12v4M7 13h4M7 16h2M15 13h2v3h-2z"/></svg>SPOILER</button>
+  <button data-tab="fuel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 21V5a2 2 0 012-2h6a2 2 0 012 2v16M3 21h14M15 9h2a2 2 0 012 2v6a1.5 1.5 0 003 0V8l-3-3M8 7h4"/></svg>PAGOS</button>
   <button data-tab="torre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 21l1-10h4l1 10M7 11h10l-2-5H9l-2 5zM12 6V3M8 21h8"/></svg>TORRE</button>
 </nav>
 
@@ -262,12 +289,13 @@ function seed(){
     bills:["Arriendo","Luz","Agua","Internet","Gas"].map(n=>({id:uid(),name:n,day:1,amount:"",setup:true,paid:{}})),
     meetings:[{id:uid(),ex:true,title:"Reunión con proveedor de licores",date:d(2),time:"10:00",place:"Social",notes:""}],
     tasks:[{id:uid(),ex:true,title:"Cotizar molino de café",due:d(5),done:false}],
-    crew:seedCrew(), billsHint:true
+    crew:seedCrew(), closes:[], billsHint:true
   };
 }
 let S; try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S) S=seed();
 if(!S.crew) S.crew=seedCrew();
+if(!S.closes) S.closes=[];
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 
 /* =================== Cálculos =================== */
@@ -281,6 +309,9 @@ function billStatus(b){
   if(days<=3) return {k:"soon",days,txt:days===0?"VENCE HOY":"EN "+days+" DÍAS",cls:"t-amber"};
   return {k:"ok",days,txt:"EN "+days+" DÍAS",cls:"t-mut"};
 }
+const ventas=c=>(c.efectivo||0)+(c.datafono||0)+(c.transfer||0)+(c.otros||0);
+const esperado=c=>(c.base||0)+(c.efectivo||0)-(c.gastos||0);
+const dif=c=>c.contado===""||c.contado==null?null:c.contado-esperado(c);
 const balance=p=>p.entries.reduce((a,e)=>a+(e.type==="cargo"?e.amount:-e.amount),0);
 function periodRange(per){
   const t=today(); let a,b;
@@ -301,9 +332,10 @@ function stats(){
   const near=upcoming.filter(m=>new Date(m.date+"T00:00:00")<=week);
   const tdone=S.tasks.filter(x=>x.done).length, ttot=S.tasks.length;
   const tover=S.tasks.filter(x=>!x.done&&x.due&&new Date(x.due+"T00:00:00")<t).length;
-  const debt=S.crew.reduce((a,p)=>a+Math.max(0,balance(p)),0);
+  const debt=S.crew.reduce((a,p)=>a+Math.max(0,balance(p)),0), owed=S.crew.filter(p=>balance(p)>0).length;
+  const [wa,wb]=periodRange("semana"), wk=S.closes.filter(c=>c.date>=wa&&c.date<=wb).length, closedToday=S.closes.some(c=>c.date===iso(t));
   const level=over||tover?"CRÍTICO":(soon||pend||near.some(m=>m.date===iso(t)))?"PRECAUCIÓN":"NORMAL";
-  return {over,soon,paid,cfg,items:items.length,done,pend,upcoming,near,tdone,ttot,tover,debt,level};
+  return {over,soon,paid,cfg,items:items.length,done,pend,upcoming,near,tdone,ttot,tover,debt,owed,wk,closedToday,level};
 }
 
 /* =================== Instrumentos =================== */
@@ -328,8 +360,8 @@ function radarFace(){
   <defs><linearGradient id="rg" x1="0" x2="1"><stop offset="0" stop-color="#7fae98" stop-opacity=".35"/><stop offset="1" stop-color="#7fae98" stop-opacity="0"/></linearGradient></defs>
   <g class="sweep"><path d="M60 60 L60 10 A50 50 0 0 1 103 35 Z" fill="url(#rg)"/></g>${blips}`);
 }
-function horizon(level){
-  const bank=level==="NORMAL"?0:level==="PRECAUCIÓN"?-12:-24, y=level==="CRÍTICO"?70:60;
+function horizon(owed){
+  const bank=-Math.min(30,owed*8), y=60+Math.min(12,owed*3);
   return face(`<clipPath id="hz"><circle cx="60" cy="60" r="51"/></clipPath><g clip-path="url(#hz)" style="transform:rotate(${bank}deg);transform-origin:60px 60px;transition:transform 1.2s">
    <rect x="-20" y="-20" width="160" height="${y+20}" fill="#2b4f66"/><rect x="-20" y="${y}" width="160" height="90" fill="#4a3220"/><path d="M-20 ${y}H140" stroke="${W}" stroke-width="1.2"/>
    ${[-20,-10,10,20].map(o=>`<path d="M${o%20?52:46} ${y+o}H${o%20?68:74}" stroke="${W}" stroke-width=".8"/>`).join("")}</g>
@@ -352,20 +384,20 @@ function vPanel(){
   const msgs=[];
   S.bills.forEach(b=>{const s=billStatus(b);if(s.k==="over")msgs.push(`<span class="c-red">MASTER WARNING</span> · ${esc(b.name)} vencido hace ${-s.days} día(s).`);else if(s.k==="soon")msgs.push(`<span class="c-amber">MASTER CAUTION</span> · ${esc(b.name)} ${s.days===0?"vence hoy":"vence en "+s.days+" día(s)"}.`)});
   if(st.pend)msgs.push(`<span class="c-amber">LOAD INCOMPLETE</span> · ${st.pend} producto(s) por comprar.`);
-  if(st.debt)msgs.push(`<span class="t-white">CREW</span> · Saldo pendiente de nómina ${cop(st.debt)}.`);
+  if(st.owed)msgs.push(`<span class="t-white">NÓMINA</span> · ${st.owed} persona(s) con saldo pendiente.`);
+  if(!st.closedToday&&new Date().getHours()>=18)msgs.push(`<span class="c-amber">SPOILER</span> · Falta el cierre de caja de hoy.`);
   if(next&&next.date===iso(today()))msgs.push(`<span class="c-green">BRIEFING</span> · ${esc(next.title)} hoy ${esc(next.time||"")}.`);
   if(st.tover)msgs.push(`<span class="c-red">MISSION OVERDUE</span> · ${st.tover} misión(es) pasaron su fecha.`);
   if(!msgs.length)msgs.push(`<span class="c-green">ALL SYSTEMS NORMAL</span> · Todo en orden.`);
-  const debtM=st.debt/1e6;
   return header("PANEL DE MANDO")+lamps(st)+
   `<h2 class="scr">INSTRUMENTOS <b class="${lvlCls}">${st.level}</b></h2>
   <div class="gauges">
    <div class="inst" data-go="fuel">${dial(st.cfg?st.paid/st.cfg:1,{unit:"FUEL · PAGOS",nums:["E","½","F"],zones:arc(0,.2,"#b8342a")+arc(.2,.45,"#d28a10")})}<div class="val">${st.cfg?`${st.paid}/${st.cfg} PAGADOS`:"SIN CONFIGURAR"}</div><div class="lbl etch">COMBUSTIBLE</div></div>
-   <div class="inst" data-go="crew">${dial(Math.min(1,debtM/10),{unit:"MILLONES COP",nums:["0","2","4","6","8","10"]})}<div class="val money">${cop(st.debt)}</div><div class="lbl etch">TRIPULACIÓN · POR PAGAR</div></div>
+   <div class="inst" data-go="spoiler">${dial(st.wk/7,{unit:"CIERRES · SEMANA",nums:["0","1","2","3","4","5","6","7"].filter((_,i)=>i%1===0).slice(0,8)})}<div class="val ${st.closedToday?"c-green":"c-amber"}">HOY: ${st.closedToday?"CERRADO":"PENDIENTE"}</div><div class="lbl etch">SPOILER · CIERRE DE CAJA</div></div>
    <div class="inst" data-go="carga">${dial(st.items?st.done/st.items:0,{unit:"% CARGA",nums:["0","25","50","75","100"]})}<div class="val">${st.items?`${Math.round(st.done/st.items*100)}% · ${st.pend} POR COMPRAR`:"SIN CARGA"}</div><div class="lbl etch">CHECKLIST DE COMPRA</div></div>
    <div class="inst" data-go="torre" data-view="misiones">${dial(st.ttot?st.tdone/st.ttot:0,{unit:"ALT × 1000 FT",nums:["0","2","4","6","8","10"]})}<div class="val">${st.tdone}/${st.ttot} MISIONES</div><div class="lbl etch">ALTÍMETRO</div></div>
    <div class="inst" data-go="torre" data-view="agenda">${radarFace()}<div class="val">${next?`${sdate(next.date).toUpperCase()} ${esc(next.time||"")}`:"CIELO DESPEJADO"}</div><div class="lbl etch">RADAR · REUNIONES</div></div>
-   <div class="inst" data-go="panel">${horizon(st.level)}<div class="val ${lvlCls}">${st.level}</div><div class="lbl etch">ESTADO DE VUELO</div></div>
+   <div class="inst" data-go="crew">${horizon(st.owed)}<div class="val ${st.owed?"c-amber":"c-green"}">${st.owed?st.owed+" POR PAGAR":"AL DÍA"}</div><div class="lbl etch">NÓMINA · TRIPULACIÓN</div></div>
   </div>
   <h2 class="scr">MENSAJES DE CABINA</h2>
   <div class="plate" style="font:12.5px/1.6 var(--mono);display:grid;gap:8px">${msgs.map(m=>`<div>${m}</div>`).join("")}</div>`;
@@ -390,11 +422,11 @@ function vChecklist(r){
   <div class="plate bolts"><div class="t" style="font-weight:700;padding:0 10px">${esc(r.from)}${r.ex?'<span class="ex">EJEMPLO</span>':""}</div>
    <div class="kv"><div><span>COMPRADO</span><b class="c-green">${b}</b></div><div><span>NO DISP.</span><b class="c-amber">${na}</b></div><div><span>PENDIENTE</span><b>${n-d}</b></div></div>
    <div class="progress" style="margin-top:10px"><i style="width:${n?d/n*100:0}%"></i></div>
-   <div class="note" style="margin-top:10px">Sube la palanca cuando lo compres. Si no lo encontraste, oprime <b>N/D</b>.</div></div>
+   <div class="note" style="margin-top:10px">Desliza el interruptor cuando lo compres. Si no lo encontraste, oprime <b>N/D</b>.</div></div>
   ${zones.map(z=>`<div class="zone">${esc(z).toUpperCase()}</div><div class="list">${r.items.filter(i=>(i.zone||"Otros")===z).map(i=>`
     <div class="row ${i.status!=="pending"?"done":""}"><div class="main"><div class="t">${esc(i.name)}</div><div class="s">${esc(i.qty||"")}${i.status==="na"?' · <span class="c-amber">NO DISPONIBLE</span>':i.status==="bought"?' · <span class="c-green">COMPRADO</span>':""}</div></div>
     <button class="nd ${i.status==="na"?"on":""}" data-nd="${i.id}" ${r.sent?"disabled":""}>N/D</button>
-    <button class="tog ${i.status==="bought"?"on":""}" data-sw="${i.id}" aria-label="Marcar ${esc(i.name)} como comprado" ${r.sent?"disabled":""}><span class="led"></span><i></i></button></div>`).join("")}</div>`).join("")}
+    <button class="sw ${i.status==="bought"?"on":""}" data-sw="${i.id}" aria-label="Marcar ${esc(i.name)} como comprado" ${r.sent?"disabled":""}><i></i></button></div>`).join("")}</div>`).join("")}
   ${r.sent?`<div class="plate" style="margin-top:14px"><div class="etch">NOTA DEL CIERRE</div><div class="note" style="margin-top:6px">${esc(r.note)||"Sin nota."}</div><div class="note">Enviado ${new Date(r.sentAt).toLocaleString("es-CO")}</div><div class="bar" style="margin-top:10px"><button class="btn sm" data-act="share">COMPARTIR REPORTE</button><button class="btn sm warn" data-act="delReq">ELIMINAR</button></div></div>`:
   `<h2 class="scr">CIERRE DE CARGA</h2>
    <div class="plate"><label class="etch" for="cnote" style="display:block;margin-bottom:8px">NOTA · OPCIONAL</label>
@@ -429,6 +461,20 @@ function vPerson(p){
   <h2 class="scr">BITÁCORA <b>${ents.length}</b></h2>
   <div class="plate" style="padding:4px 12px">${ents.length?ents.map(e=>`<button class="entry" style="width:100%;background:none;border:0;border-bottom:1px solid #1e1f1e;text-align:left;color:inherit" data-entry="${e.id}"><span class="d">${sdate(e.date)}</span><span class="c">${esc(e.concept)}<br><span style="font:9px var(--mono);letter-spacing:1px;color:var(--mut)">${e.type==="cargo"?"SE LE DEBE":"PAGO"}</span></span><span class="a ${e.type==="cargo"?"c-amber":"c-green"}">${e.type==="cargo"?"+":"−"}${cop(e.amount)}</span></button>`).join(""):`<div class="empty" style="border:0">Sin movimientos todavía.</div>`}</div>`;
 }
+function vSpoiler(){
+  const [ra,rb]=periodRange(period), L=S.closes.filter(c=>c.date>=ra&&c.date<=rb);
+  const sum=f=>L.reduce((a,c)=>a+f(c),0);
+  const all=[...S.closes].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,40);
+  const dTag=c=>{const d=dif(c);if(d===null)return `<span class="tag t-mut">SIN CONTAR</span>`;if(d===0)return `<span class="tag t-green">CUADRA</span>`;return `<span class="tag ${d>0?"t-amber":"t-red"}">${d>0?"SOBRA":"FALTA"} ${cop(Math.abs(d))}</span>`};
+  return header("SPOILER · CIERRE DE CAJA")+
+  `<div class="plate bolts"><div class="etch" style="padding:0 10px">VENTAS DEL PERIODO</div><div class="lcd" style="padding:4px 10px 0">${cop(sum(ventas))}</div>
+   <div class="seg" style="margin-top:12px">${["semana","quincena","mes"].map(x=>`<button data-per="${x}" class="${period===x?"act":""}">${x.toUpperCase()}</button>`).join("")}</div>
+   <div class="kv"><div><span>EFECTIVO</span><b>${cop(sum(c=>c.efectivo||0))}</b></div><div><span>DATÁFONO</span><b>${cop(sum(c=>c.datafono||0))}</b></div><div><span>TRANSFER.</span><b>${cop(sum(c=>c.transfer||0))}</b></div></div>
+   <div class="kv" style="margin-top:6px"><div><span>GASTOS CAJA</span><b class="c-amber">${cop(sum(c=>c.gastos||0))}</b></div><div><span>CIERRES</span><b>${L.length}</b></div><div><span>PERIODO</span><b style="font-size:10px">${sdate(ra)} – ${sdate(rb)}</b></div></div></div>
+  <h2 class="scr">BITÁCORA DE CIERRES <b>${S.closes.length}</b></h2>
+  <div class="list">${all.length?all.map(c=>`<button class="row" style="width:100%;text-align:left" data-close="${c.id}"><div class="main"><div class="t">${fdate(c.date)}</div><div class="s">${c.resp?esc(c.resp)+" · ":""}ventas ${cop(ventas(c))}</div></div>${dTag(c)}</button>`).join(""):`<div class="empty">SIN CIERRES REGISTRADOS<br>Al cerrar el día, toca "+ SPOILER DE HOY".</div>`}</div>
+  <button class="btn primary fab" data-act="newClose">+ SPOILER DE HOY</button>`;
+}
 function vFuel(){
   const list=S.bills.map(b=>({b,s:billStatus(b)})).sort((x,y)=>x.s.days-y.s.days);
   const t=new Date();
@@ -446,7 +492,7 @@ function vTorre(){
   const seg=`<div class="seg" style="margin:0 2px 4px">${[["agenda","REUNIONES"],["misiones","MISIONES"]].map(([k,l])=>`<button data-tv="${k}" class="${torreView===k?"act":""}">${l}</button>`).join("")}</div>`;
   if(torreView==="misiones"){
     const open=S.tasks.filter(x=>!x.done).sort((a,b)=>(a.due||"9").localeCompare(b.due||"9")), done=S.tasks.filter(x=>x.done).slice(-8).reverse();
-    const card=x=>{const late=!x.done&&x.due&&x.due<t;return `<div class="row ${x.done?"done":""}"><button class="main" style="background:none;border:0;text-align:left;padding:0;color:inherit" data-task="${x.id}"><div class="t">${esc(x.title)}${x.ex?'<span class="ex">EJEMPLO</span>':""}</div><div class="s">${x.due?(late?'<span class="c-red">VENCIÓ · </span>':"")+fdate(x.due):"Sin fecha"}</div></button><button class="tog ${x.done?"on":""}" data-tk="${x.id}" aria-label="Completar ${esc(x.title)}"><span class="led"></span><i></i></button></div>`};
+    const card=x=>{const late=!x.done&&x.due&&x.due<t;return `<div class="row ${x.done?"done":""}"><button class="main" style="background:none;border:0;text-align:left;padding:0;color:inherit" data-task="${x.id}"><div class="t">${esc(x.title)}${x.ex?'<span class="ex">EJEMPLO</span>':""}</div><div class="s">${x.due?(late?'<span class="c-red">VENCIÓ · </span>':"")+fdate(x.due):"Sin fecha"}</div></button><button class="sw ${x.done?"on":""}" data-tk="${x.id}" aria-label="Completar ${esc(x.title)}"><i></i></button></div>`};
     return header("TORRE DE CONTROL")+seg+`<h2 class="scr">MISIONES PENDIENTES <b>${open.length}</b></h2><div class="list">${open.length?open.map(card).join(""):`<div class="empty">MISSION ACCOMPLISHED<br>No hay misiones pendientes.</div>`}</div>
     <h2 class="scr">CUMPLIDAS</h2><div class="list">${done.length?done.map(card).join(""):`<div class="empty">Aún no hay misiones cumplidas.</div>`}</div><button class="btn primary fab" data-act="newTask">+ NUEVA MISIÓN</button>`;
   }
@@ -459,10 +505,11 @@ function vTorre(){
 
 /* =================== Render =================== */
 function render(){
-  $("#app").innerHTML={panel:vPanel,carga:vCarga,crew:vCrew,fuel:vFuel,torre:vTorre}[tab]();
+  $("#app").innerHTML={panel:vPanel,carga:vCarga,crew:vCrew,spoiler:vSpoiler,fuel:vFuel,torre:vTorre}[tab]();
   document.querySelectorAll("nav.tabs button").forEach(b=>{b.classList.toggle("act",b.dataset.tab===tab);b.querySelector(".dot")?.remove()});
   const st=stats(), dot=(t,red)=>{const b=document.querySelector(`nav.tabs [data-tab="${t}"]`);const s=document.createElement("span");s.className="dot"+(red?" red":"");b.appendChild(s)};
   if(st.pend)dot("carga"); if(st.over)dot("fuel",true);else if(st.soon)dot("fuel");
+  if(!st.closedToday&&new Date().getHours()>=18)dot("spoiler");
   if(st.tover)dot("torre",true);else if(st.near.some(m=>m.date===iso(today())))dot("torre");
   try{navigator.setAppBadge&&(st.pend+st.over+st.soon?navigator.setAppBadge(st.pend+st.over+st.soon):navigator.clearAppBadge())}catch(e){}
 }
@@ -539,6 +586,31 @@ function formPerson(p){
     if(isNew){S.crew.push({id:uid(),...v,entries:[]})}else Object.assign(p,v); toast("GUARDADO");
   });
 }
+function formClose(c){
+  const isNew=!c; c=c||{date:iso(today()),resp:"",base:(S.closes.at(-1)||{}).base||"",efectivo:"",datafono:"",transfer:"",otros:"",gastos:"",contado:"",nota:""};
+  const m=(n,l,ph)=>`<label>${l}<input name="${n}" data-money inputmode="numeric" value="${c[n]!==""&&c[n]!=null?cop(c[n]):""}" placeholder="${ph||"$"}"></label>`;
+  sheet(`<h3>${isNew?"SPOILER · CIERRE DE CAJA":"SPOILER · "+fdate(c.date).toUpperCase()}</h3>
+  <div class="grid2"><label>FECHA<input name="date" type="date" required value="${c.date}"></label><label>QUIÉN CIERRA<input name="resp" value="${esc(c.resp||"")}" placeholder="Ej: Liseth"></label></div>
+  <div class="etch" style="margin-top:4px">VENTAS DEL DÍA</div>
+  <div class="grid2">${m("efectivo","EFECTIVO")}${m("datafono","DATÁFONO")}${m("transfer","TRANSFERENCIAS")}${m("otros","OTROS")}</div>
+  <div class="etch" style="margin-top:4px">CAJA</div>
+  <div class="grid2">${m("base","BASE INICIAL")}${m("gastos","GASTOS PAGADOS DE CAJA")}</div>
+  ${m("contado","EFECTIVO CONTADO AL CIERRE","$ lo que hay en caja")}
+  <div class="plate" id="cPrev" style="padding:10px 12px;font:12px/1.7 var(--mono)"></div>
+  <label>NOTA<textarea name="nota" rows="2" placeholder="Ej: se pagó el hielo de caja">${esc(c.nota||"")}</textarea></label>
+  ${isNew?"":`<button type="button" class="btn warn" data-act="delClose" data-id="${c.id}">ELIMINAR CIERRE</button>`}`,f=>{
+    const g=k=>f[k]===""?"":num(f[k]);
+    const v={date:f.date,resp:f.resp.trim(),efectivo:num(f.efectivo),datafono:num(f.datafono),transfer:num(f.transfer),otros:num(f.otros),base:num(f.base),gastos:num(f.gastos),contado:g("contado"),nota:f.nota.trim()};
+    if(isNew)S.closes.push({id:uid(),...v});else Object.assign(c,v); toast("SPOILER GUARDADO");
+  });
+  previewClose();
+}
+function previewClose(){
+  const f=$("#sf"), box=$("#cPrev"); if(!f||!box)return;
+  const v=k=>num(f[k].value), c={efectivo:v("efectivo"),datafono:v("datafono"),transfer:v("transfer"),otros:v("otros"),base:v("base"),gastos:v("gastos"),contado:f.contado.value===""?"":v("contado")};
+  const d=dif(c);
+  box.innerHTML=`VENTAS TOTALES <b style="float:right">${cop(ventas(c))}</b><br>DEBE HABER EN CAJA <b style="float:right">${cop(esperado(c))}</b><br>${d===null?'<span class="c-mut">Escribe el efectivo contado para cuadrar.</span>':d===0?'<span class="c-green">CAJA CUADRADA</span>':`<span class="${d>0?"c-amber":"c-red"}">${d>0?"SOBRA":"FALTA"}</span> <b style="float:right" class="${d>0?"c-amber":"c-red"}">${cop(Math.abs(d))}</b>`}`;
+}
 function formEntry(p,type,e){
   const isNew=!e; e=e||{date:iso(today()),concept:type==="cargo"?(p.freq==="por turno"?"Turno":p.freq==="semanal"?"Semana":p.freq==="mensual"?"Mes":"Quincena"):"Pago",amount:type==="cargo"&&p.base?p.base:""};
   type=e.type||type;
@@ -552,7 +624,7 @@ function formEntry(p,type,e){
     if(isNew)p.entries.push({id:uid(),...v});else Object.assign(e,v); toast(v.type==="cargo"?"DEUDA REGISTRADA":"PAGO REGISTRADO");
   });
 }
-document.addEventListener("input",e=>{if(e.target.name==="amount"||e.target.name==="base"){const n=num(e.target.value);e.target.value=n?cop(n):""}});
+document.addEventListener("input",e=>{if(e.target.name==="amount"||e.target.name==="base"||"money" in e.target.dataset){const n=num(e.target.value);e.target.value=n?cop(n):(e.target.name==="contado"&&e.target.value.includes("0")?"$0":"")}if(e.target.closest("#sf")&&$("#cPrev"))previewClose()});
 
 /* =================== Reporte y calendario =================== */
 function reportText(r){
@@ -590,9 +662,11 @@ document.addEventListener("click",e=>{
   if(d.meet){formMeet(S.meetings.find(x=>x.id===d.meet));return}
   if(d.task){formTask(S.tasks.find(x=>x.id===d.task));return}
   if(d.entry){const en=p.entries.find(x=>x.id===d.entry);formEntry(p,en.type,en);return}
+  if(d.close){formClose(S.closes.find(x=>x.id===d.close));return}
   if(d.tk){const x=S.tasks.find(t=>t.id===d.tk);x.done=!x.done;buzz();save();keep(()=>{});if(x.done)toast("MISSION ACCOMPLISHED");return}
   const A={
-    newReq:formReq,newBill:()=>formBill(),newMeet:()=>formMeet(),newTask:()=>formTask(),newPerson:()=>formPerson(),
+    newReq:formReq,newClose:()=>{const ex=S.closes.find(x=>x.date===iso(today()));formClose(ex)},
+    delClose:()=>{S.closes=S.closes.filter(x=>x.id!==d.id);save();closeSheet();render()},newBill:()=>formBill(),newMeet:()=>formMeet(),newTask:()=>formTask(),newPerson:()=>formPerson(),
     editPerson:()=>formPerson(p),addCargo:()=>formEntry(p,"cargo"),addAbono:()=>formEntry(p,"abono"),
     closeSheet,back:()=>{openReqId=null;render()},backCrew:()=>{openCrewId=null;render()},
     hideHint:()=>{S.billsHint=false;save();render()},
@@ -622,7 +696,36 @@ let booted=false;
 function endBoot(){if(booted)return;booted=true;$("#hello").hidden=false;$("#boot").classList.add("out");setTimeout(()=>$("#boot")?.remove(),700)}
 setTimeout(endBoot,reduce?300:6200);
 $("#boot").addEventListener("click",endBoot);
-$("#startBtn").onclick=()=>{buzz();$("#hello").hidden=true;$("#app").hidden=false;$("#tabs").hidden=false;render()};
+const FL="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+function flap(text,cls,delay){const el=document.createElement("span");el.className="flap "+(cls||"");[...text].forEach((ch,i)=>{const t=document.createElement("i");t.textContent=ch===" "?"\u00a0":FL[Math.random()*36|0];el.appendChild(t);
+  let n=0,max=6+i*2+(delay||0);const iv=setInterval(()=>{if(++n>=max){t.textContent=ch===" "?"\u00a0":ch;clearInterval(iv)}else t.textContent=FL[Math.random()*36|0]},55)});return el}
+function buildHello(){
+  const st=stats(), d=new Date(); $("#fidsClock").textContent=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+  const rows=[["SC001","OPERACION","A1","ABORDANDO","st"],["SC014","COMPRAS","B2",st.pend?"DEMORADO":"A TIEMPO",st.pend?"st":"ok"],["SC027","NOMINA","C3",st.owed?"PENDIENTE":"AL DIA",st.owed?"st":"ok"],["SC032","SPOILER","D4",st.closedToday?"CERRADO":"PROGRAMADO",st.closedToday?"ok":""]];
+  const box=$("#fidsRows");box.innerHTML="";
+  rows.forEach((r,k)=>{const row=document.createElement("div");row.className="fr";row.append(flap(r[0],"",k*3),flap(r[1].padEnd(9).slice(0,9),"",k*3),flap(r[2],"",k*3),flap(r[3].padEnd(10).slice(0,10),r[4],k*3));box.appendChild(row)});
+  const svg=$("#runway"); let h='<defs><linearGradient id="rw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c0d0c" stop-opacity="0"/><stop offset="1" stop-color="#141614"/></linearGradient></defs><path d="M188 0 L202 0 L330 160 L60 160 Z" fill="url(#rw)"/>';
+  for(let k=0;k<16;k++){const t=k/15, y=160*Math.pow(1-t,1.6), w=(1-t)*135+6, r=Math.max(.5,2.6*(1-t)+.4), xL=195-w, xR=195+w;
+    const col=k===0?"#4fd08a":k===15?"#e0483c":"#ffe6b0";
+    h+=`<circle class="edge" cx="${xL}" cy="${y}" r="${r}" fill="${col}"/><circle class="edge" cx="${xR}" cy="${y}" r="${r}" fill="${col}"/>`;
+    if(k<11)h+=`<circle class="rab" style="animation-delay:${(10-k)*-0.1+1.4}s" cx="195" cy="${y}" r="${r*1.1}" fill="#fff"/>`;}
+  svg.innerHTML=h;
+}
+buildHello();
+const WA="https://wa.me/573152859643";
+function capitana(){
+  const k="socialapp_capitana", t=iso(today()); let last=""; try{last=localStorage.getItem(k)||""}catch(e){}
+  if(last===t)return; try{localStorage.setItem(k,t)}catch(e){}
+  $("#sheet").innerHTML=`<div style="text-align:center;display:grid;gap:12px;padding:6px 0">
+   <div class="lamp on-amber" style="height:40px;font-size:10px">TRANSMISIÓN ENTRANTE · PRIORIDAD ALTA</div>
+   <div style="font:700 9px var(--mono);letter-spacing:2px;color:var(--mut)">FRECUENCIA 121.5 · CANAL PRIVADO</div>
+   <h3 style="font-size:17px;letter-spacing:2px">LA CAPITANA LLAMA A CABINA</h3>
+   <div class="note">Se solicita respuesta inmediata del capitán.<br>No se autoriza ninguna operación sin antes responder.</div>
+   <a class="btn primary block" href="${WA}" target="_blank" rel="noopener" style="text-decoration:none;display:block">RESPONDER A LA CAPITANA</a>
+   <button class="btn ghost" data-act="closeSheet" style="color:var(--mut)">MÁS TARDE (BAJO MI RIESGO)</button></div>`;
+  $("#sheetBg").hidden=false;
+}
+$("#startBtn").onclick=()=>{buzz();$("#hello").hidden=true;$("#app").hidden=false;$("#tabs").hidden=false;render();setTimeout(capitana,700)};
 setInterval(()=>{const a=document.activeElement;if(!$("#app").hidden&&$("#sheetBg").hidden&&!(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)))keep(()=>{})},60000);
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>
