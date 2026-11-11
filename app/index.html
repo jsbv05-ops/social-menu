@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SOCIAL APP">
+<meta name="theme-color" content="#07100c">
+<meta name="robots" content="noindex">
+<title>SOCIAL APP</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=B612:wght@400;700&family=B612+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Cabina: fondo negro verdoso, paneles gris oscuro con tornillos, pantallas verde fósforo, ámbar para precaución, rojo para alerta */
+:root{
+  --bg:#07100c; --panel:#121916; --panel2:#18211d; --bezel:#2a3530; --line:#25302b;
+  --pine:#1f5c45; --pine2:#2f8a66; --glow:#5be0a6; --fg:#e9efe9; --mut:#8a9a92;
+  --amber:#ffb020; --red:#ff4d3d; --cyan:#61d6ff;
+  --ui:"B612",system-ui,sans-serif; --mono:"B612 Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--ui);overscroll-behavior:none;-webkit-user-select:none;user-select:none}
+input,textarea,select{font:16px var(--ui);color:var(--fg);background:#0b1310;border:1px solid var(--bezel);border-radius:10px;padding:11px 12px;width:100%;outline:none;-webkit-user-select:text;user-select:text}
+input:focus,textarea:focus,select:focus{border-color:var(--pine2);box-shadow:0 0 0 3px #2f8a6633}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+
+/* ---------- Loader: shaker + vertido + logo revelado ---------- */
+#boot{position:fixed;inset:0;z-index:100;background:#030605;display:grid;place-items:center;overflow:hidden;transition:opacity .5s}
+#boot.out{opacity:0;pointer-events:none}
+#boot .stage{position:relative;width:260px;height:340px}
+#shaker{position:absolute;left:50%;top:40px;width:96px;margin-left:-48px;transform-origin:50% 70%;animation:shake .32s ease-in-out 5,pour .7s .1s ease-in-out forwards 1.7s}
+#shaker{animation:shake .32s ease-in-out 0s 5, pour .7s ease-in-out 1.6s forwards}
+@keyframes shake{0%,100%{transform:translate(0,0) rotate(0)}25%{transform:translate(-10px,-14px) rotate(-14deg)}75%{transform:translate(10px,6px) rotate(14deg)}}
+@keyframes pour{to{transform:translate(40px,-30px) rotate(-128deg)}}
+#stream{position:absolute;left:118px;top:120px;width:7px;height:0;border-radius:4px;background:linear-gradient(#cfe9dc,#5be0a6);animation:stream .5s ease-in 2.2s forwards}
+@keyframes stream{to{height:520px}}
+#flood{position:fixed;left:0;right:0;bottom:0;height:0;opacity:0;background:linear-gradient(180deg,#2f8a66,#16402f 40%,#0c2219);animation:flood 1.1s cubic-bezier(.5,0,.3,1) 2.45s forwards}
+#flood::before{content:"";position:absolute;left:-10%;right:-10%;top:-18px;height:36px;background:radial-gradient(ellipse at 50% 100%,#2f8a66 60%,transparent 62%) 0 0/120px 36px repeat-x;animation:wave 1.2s linear infinite}
+@keyframes wave{to{background-position:120px 0}}
+@keyframes flood{0%{opacity:1;height:0}100%{opacity:1;height:100%}}
+#reveal{position:fixed;inset:0;display:grid;place-items:center;clip-path:inset(100% 0 0 0);animation:reveal 1.1s cubic-bezier(.5,0,.3,1) 2.55s forwards;pointer-events:none}
+#reveal img{width:min(70vw,320px);filter:drop-shadow(0 4px 18px #0008)}
+@keyframes reveal{to{clip-path:inset(0 0 0 0)}}
+#boot .boot-txt{position:fixed;left:0;right:0;bottom:calc(40px + env(safe-area-inset-bottom));text-align:center;font:12px var(--mono);letter-spacing:3px;color:var(--glow);opacity:.8;z-index:2}
+@media (prefers-reduced-motion:reduce){#shaker,#stream,#flood,#reveal{animation-duration:.01s!important;animation-delay:0s!important}}
+
+/* ---------- Saludo ---------- */
+#hello{position:fixed;inset:0;z-index:90;background:radial-gradient(circle at 50% 30%,#123327,#030605 70%);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;padding:24px;text-align:center}
+#hello[hidden]{display:none}
+#hello img{width:180px;opacity:.95}
+#hello h1{font:700 22px var(--mono);letter-spacing:2px;margin:10px 0 0;color:var(--fg)}
+#hello p{margin:0;color:var(--mut);line-height:1.6;font-size:15px}
+#hello .sys{font:12px var(--mono);color:var(--glow);letter-spacing:2px}
+.btn-start{margin-top:18px;border:2px solid var(--glow);background:#0f2a1f;color:var(--glow);border-radius:14px;padding:16px 26px;font:700 15px var(--mono);letter-spacing:3px;box-shadow:0 0 24px #5be0a633,inset 0 0 12px #5be0a622}
+
+/* ---------- Layout ---------- */
+#app{min-height:100%;padding:calc(env(safe-area-inset-top) + 10px) 14px calc(160px + env(safe-area-inset-bottom))}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+header.top img{height:26px}
+.clock{font:700 14px var(--mono);color:var(--glow);letter-spacing:1px;text-align:right}
+.clock small{display:block;font-weight:400;color:var(--mut);font-size:10px;letter-spacing:2px}
+h2.scr{font:700 13px var(--mono);letter-spacing:3px;color:var(--mut);margin:18px 2px 10px;display:flex;justify-content:space-between;align-items:center}
+h2.scr b{color:var(--fg)}
+.panel{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:14px;position:relative;box-shadow:inset 0 1px 0 #ffffff08,0 6px 18px #0006}
+.panel.screw::before,.panel.screw::after{content:"";position:absolute;width:6px;height:6px;border-radius:50%;background:radial-gradient(#55625c,#232b27);top:8px}
+.panel.screw::before{left:8px}.panel.screw::after{right:8px}
+
+/* Anunciador */
+.annun{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.lamp{border-radius:8px;padding:8px 4px;text-align:center;font:700 10px var(--mono);letter-spacing:1px;background:#0c120f;color:#3b4a43;border:1px solid #1c2521;line-height:1.25}
+.lamp.on-green{color:#0a1a12;background:var(--glow);box-shadow:0 0 14px #5be0a688}
+.lamp.on-amber{color:#1b1200;background:var(--amber);box-shadow:0 0 16px #ffb02088;animation:blink 1.2s infinite}
+.lamp.on-red{color:#200300;background:var(--red);box-shadow:0 0 18px #ff4d3d99;animation:blink .7s infinite}
+@keyframes blink{50%{filter:brightness(.55)}}
+
+/* Instrumentos */
+.gauges{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.gauge{background:radial-gradient(circle at 50% 40%,#151d19,#0a0f0d);border:1px solid var(--line);border-radius:18px;padding:10px 8px 12px;text-align:center;cursor:pointer}
+.gauge svg{width:100%;max-width:150px;height:auto;display:block;margin:0 auto}
+.gauge .lbl{font:700 10px var(--mono);letter-spacing:2px;color:var(--mut);margin-top:4px}
+.gauge .val{font:700 14px var(--mono);color:var(--fg)}
+.needle{transition:transform 1.2s cubic-bezier(.3,1.4,.5,1);transform-origin:60px 60px}
+.radar-sweep{transform-origin:60px 60px;animation:sweep 3s linear infinite}
+@keyframes sweep{to{transform:rotate(360deg)}}
+
+/* Listas */
+.list{display:grid;gap:8px}
+.row{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
+.row .main{flex:1;min-width:0}
+.row .t{font-size:15px;font-weight:700;line-height:1.3}
+.row .s{font:12px var(--mono);color:var(--mut);margin-top:3px}
+.row.done .t{color:var(--mut);text-decoration:line-through}
+.chip{font:700 10px var(--mono);letter-spacing:1px;border-radius:6px;padding:4px 7px;white-space:nowrap;border:1px solid currentColor}
+.c-green{color:var(--glow)}.c-amber{color:var(--amber)}.c-red{color:var(--red)}.c-mut{color:var(--mut)}.c-cyan{color:var(--cyan)}
+.empty{color:var(--mut);text-align:center;font:13px var(--mono);padding:26px 10px;border:1px dashed var(--line);border-radius:14px}
+
+/* Interruptor de cabina */
+.sw{flex:none;width:58px;height:34px;border-radius:9px;background:#0a0f0d;border:1px solid var(--bezel);position:relative;box-shadow:inset 0 2px 6px #000}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:6px;background:linear-gradient(#56635d,#2b3531);box-shadow:0 2px 4px #000a;transition:left .18s}
+.sw.on{background:#103424;border-color:var(--pine2)}
+.sw.on::after{left:27px;background:linear-gradient(#7af2bd,#2f8a66)}
+.sw.na{background:#2a1a05;border-color:var(--amber)}
+.sw.na::after{left:15px;background:linear-gradient(#ffd27a,#c27a00)}
+
+/* Botones */
+.btn{border:1px solid var(--bezel);background:linear-gradient(#1c2622,#121916);border-radius:12px;padding:12px 14px;font:700 12px var(--mono);letter-spacing:1.5px;color:var(--fg)}
+.btn.primary{background:linear-gradient(#2f8a66,#1f5c45);border-color:#3fa37b;color:#fff;box-shadow:0 0 18px #2f8a6644}
+.btn.warn{color:var(--amber);border-color:#6b4a0c}
+.btn.ghost{background:transparent}
+.btn.sm{padding:8px 10px;font-size:11px}
+.btn.block{width:100%;padding:16px}
+.bar{display:flex;gap:8px;flex-wrap:wrap}
+.fab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:20;border-radius:16px;padding:14px 16px}
+
+/* Tabbar */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:linear-gradient(#0d1411ee,#070c0aee);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+nav.tabs button{background:none;border:0;padding:6px 2px;display:grid;justify-items:center;gap:3px;font:700 9px var(--mono);letter-spacing:1px;color:var(--mut);position:relative}
+nav.tabs button svg{width:24px;height:24px}
+nav.tabs button.act{color:var(--glow)}
+nav.tabs button .dot{position:absolute;top:4px;right:calc(50% - 18px);width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+nav.tabs button .dot.red{background:var(--red);box-shadow:0 0 8px var(--red)}
+
+/* Hoja modal */
+.sheet-bg{position:fixed;inset:0;z-index:60;background:#000a;display:flex;align-items:flex-end}
+.sheet-bg[hidden]{display:none}
+.sheet{width:100%;max-height:90vh;overflow:auto;background:var(--panel2);border-top:1px solid var(--bezel);border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));display:grid;gap:12px;-webkit-overflow-scrolling:touch}
+.sheet h3{margin:0;font:700 14px var(--mono);letter-spacing:2px}
+.sheet label{font:700 10px var(--mono);letter-spacing:2px;color:var(--mut);display:grid;gap:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 12px);transform:translateX(-50%);z-index:80;background:#0f2a1f;border:1px solid var(--glow);color:var(--glow);font:700 12px var(--mono);letter-spacing:1.5px;padding:10px 14px;border-radius:12px;box-shadow:0 0 18px #5be0a644;max-width:90vw;text-align:center}
+.zone{font:700 11px var(--mono);letter-spacing:2px;color:var(--pine2);margin:14px 2px 6px}
+.progress{height:8px;background:#0a0f0d;border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--pine),var(--glow));transition:width .4s}
+.note{font-size:13px;color:var(--mut);line-height:1.5}
+.ex{font:700 9px var(--mono);letter-spacing:1px;color:var(--amber);border:1px dashed var(--amber);border-radius:5px;padding:2px 5px;margin-left:6px;vertical-align:middle}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg button{border:1px solid var(--bezel);background:#0b1310;border-radius:10px;padding:9px 4px;font:700 11px var(--mono);color:var(--mut)}
+.seg button.act{border-color:var(--glow);color:var(--glow);background:#0f2a1f}
+</style>
+</head>
+<body>
+
+<div id="boot" aria-label="Cargando SOCIAL APP">
+  <div class="stage">
+    <svg id="shaker" viewBox="0 0 96 200" aria-hidden="true">
+      <defs><linearGradient id="steel" x1="0" x2="1"><stop offset="0" stop-color="#6d7a74"/><stop offset=".35" stop-color="#e6ece9"/><stop offset=".6" stop-color="#9aa7a1"/><stop offset="1" stop-color="#4b5652"/></linearGradient></defs>
+      <path d="M14 10 H82 L74 92 H22 Z" fill="url(#steel)"/>
+      <path d="M20 86 H76 L70 196 H26 Z" fill="url(#steel)"/>
+      <rect x="18" y="84" width="60" height="6" rx="2" fill="#38433e"/>
+      <path d="M30 100 V186" stroke="#fff" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <div id="stream"></div>
+  </div>
+  <div id="flood"></div>
+  <div id="reveal"><img src="logo.png" alt="SOCIAL Drinks and Coffee"></div>
+  <div class="boot-txt">PREPARANDO CABINA…</div>
+</div>
+
+<div id="hello" hidden>
+  <img src="logo.png" alt="">
+  <h1 id="helloTitle">BUENAS NOCHES, CAPITÁN.</h1>
+  <p>La cabina está lista.<br>Los sistemas están en línea.<br>Las operaciones de Social esperan autorización.</p>
+  <p style="color:var(--fg);margin-top:6px">¿Listo para despegar?</p>
+  <button class="btn-start" id="startBtn">INICIAR OPERACIONES</button>
+  <div class="sys">ESTADO DEL SISTEMA: ONLINE · BASE: SOCIAL DRINKS &amp; COFFEE</div>
+</div>
+
+<main id="app" hidden></main>
+
+<nav class="tabs" id="tabs" hidden>
+  <button data-tab="panel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="13" r="8"/><path d="M12 13l4-4M7 13h.01M12 8h.01M17 13h.01"/></svg>PANEL</button>
+  <button data-tab="carga"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18l-2 12H5L3 7zM8 7V5a4 4 0 018 0v2"/></svg>CARGA</button>
+  <button data-tab="fuel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 21V5a2 2 0 012-2h6a2 2 0 012 2v16M3 21h14M15 9h2a2 2 0 012 2v6a1.5 1.5 0 003 0V8l-3-3M8 7h4"/></svg>COMBUST.</button>
+  <button data-tab="torre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21l1-10h4l1 10M7 11h10l-2-5H9l-2 5zM12 6V3M8 21h8"/></svg>TORRE</button>
+  <button data-tab="ops"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3 8-8M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h9"/></svg>MISIONES</button>
+</nav>
+
+<div class="sheet-bg" id="sheetBg" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+
+<script>
+/* =================== Datos =================== */
+const KEY="socialapp_v1";
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const cop=n=>n?("$"+Number(n).toLocaleString("es-CO")):"";
+const MES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+const DIA=["dom","lun","mar","mié","jue","vie","sáb"];
+const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
+const ym=(d=new Date())=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+const fdate=s=>{if(!s)return"";const d=new Date(s+"T00:00:00");return DIA[d.getDay()]+" "+d.getDate()+" "+MES[d.getMonth()]};
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+
+function seed(){
+  const t=today(), d=(n)=>{const x=new Date(t);x.setDate(x.getDate()+n);return iso(x)};
+  return {
+    reqs:[{id:uid(),ex:true,from:"Barra (ejemplo)",date:new Date().toISOString(),sent:false,note:"",items:[
+      ["Nevera · Bagón 1","Limones","3 kg"],["Nevera · Bagón 1","Hierba buena","2"],["Nevera · Bagón 3","Costeñita","24"],
+      ["Vitrina de Cocteles","Syrup Blue Curacao","1"],["Congelador","Hielo","6 bolsas"],["Mesón","Pitillos de Bambu","2"],["Caja de Aseo","Limpiavidrios","1"]
+    ].map(([zone,name,qty])=>({id:uid(),zone,name,qty,status:"pending"}))}],
+    bills:[
+      {id:uid(),name:"Arriendo",day:5,amount:"",cat:"arriendo"},
+      {id:uid(),name:"Luz",day:15,amount:"",cat:"luz"},
+      {id:uid(),name:"Agua",day:20,amount:"",cat:"agua"},
+      {id:uid(),name:"Internet",day:10,amount:"",cat:"internet"},
+      {id:uid(),name:"Gas",day:25,amount:"",cat:"gas"}
+    ].map(b=>({...b,setup:true,paid:{}})),
+    meetings:[{id:uid(),ex:true,title:"Reunión con proveedor de licores",date:d(2),time:"10:00",place:"Social",notes:""}],
+    tasks:[{id:uid(),ex:true,title:"Cotizar molino de café",due:d(5),done:false},{id:uid(),ex:true,title:"Revisar cocteles de diciembre",due:d(9),done:false}],
+    billsHint:true
+  };
+}
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S) S=seed();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+
+/* =================== Cálculos de estado =================== */
+function billStatus(b){
+  if(b.setup) return {k:"setup",days:99,txt:"CONFIGURAR",cls:"c-cyan"};
+  const t=today(); const paid=b.paid[ym()];
+  const due=new Date(t.getFullYear(),t.getMonth(),Math.min(b.day,new Date(t.getFullYear(),t.getMonth()+1,0).getDate()));
+  const days=Math.round((due-t)/864e5);
+  if(paid) return {k:"paid",days,due,txt:"PAGADO",cls:"c-green"};
+  if(days<0) return {k:"over",days,due,txt:"VENCIDO "+(-days)+"D",cls:"c-red"};
+  if(days<=3) return {k:"soon",days,due,txt:days===0?"VENCE HOY":"VENCE EN "+days+"D",cls:"c-amber"};
+  return {k:"ok",days,due,txt:"EN "+days+" DÍAS",cls:"c-mut"};
+}
+function activeReq(){return S.reqs.find(r=>!r.sent)}
+function stats(){
+  const bs=S.bills.map(billStatus);
+  const over=bs.filter(x=>x.k==="over").length, soon=bs.filter(x=>x.k==="soon").length, paid=bs.filter(x=>x.k==="paid").length;
+  const ar=activeReq(); const items=ar?ar.items:[]; const done=items.filter(i=>i.status!=="pending").length;
+  const pend=S.reqs.filter(r=>!r.sent).reduce((a,r)=>a+r.items.filter(i=>i.status==="pending").length,0);
+  const t=today(); const week=new Date(t);week.setDate(week.getDate()+7);
+  const upcoming=S.meetings.filter(m=>{const d=new Date(m.date+"T00:00:00");return d>=t}).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+  const near=upcoming.filter(m=>new Date(m.date+"T00:00:00")<=week);
+  const tdone=S.tasks.filter(x=>x.done).length, ttot=S.tasks.length;
+  const tover=S.tasks.filter(x=>!x.done&&x.due&&new Date(x.due+"T00:00:00")<t).length;
+  const level=over||tover?"CRÍTICO":(soon||pend||near.some(m=>m.date===iso(t)))?"PRECAUCIÓN":"NORMAL";
+  return {over,soon,paid,billsN:S.bills.length,items:items.length,done,pend,upcoming,near,tdone,ttot,tover,level};
+}
+
+/* =================== Instrumentos (SVG) =================== */
+function dial(pct,label,val,opts={}){
+  const a=-120+240*Math.max(0,Math.min(1,pct));
+  const ticks=[...Array(13)].map((_,i)=>{const ang=(-120+i*20-90)*Math.PI/180;const r1=48,r2=i%3?43:39;return `<line x1="${60+r1*Math.cos(ang)}" y1="${60+r1*Math.sin(ang)}" x2="${60+r2*Math.cos(ang)}" y2="${60+r2*Math.sin(ang)}" stroke="#cfd8d3" stroke-width="${i%3?1:2}"/>`}).join("");
+  const arcColor=opts.color||"#5be0a6";
+  return `<svg viewBox="0 0 120 120" aria-hidden="true">
+  <circle cx="60" cy="60" r="57" fill="#0a0f0d" stroke="#2f3a35" stroke-width="4"/>
+  <circle cx="60" cy="60" r="52" fill="none" stroke="#1c2521" stroke-width="1"/>
+  ${opts.zones||""}${ticks}
+  <text x="60" y="${opts.top?30:84}" text-anchor="middle" font-family="B612 Mono, monospace" font-size="8" fill="#8a9a92">${opts.unit||""}</text>
+  ${opts.l?`<text x="24" y="98" font-family="B612 Mono, monospace" font-size="9" fill="#8a9a92">${opts.l}</text><text x="88" y="98" font-family="B612 Mono, monospace" font-size="9" fill="#8a9a92">${opts.r}</text>`:""}
+  <g class="needle" style="transform:rotate(${a}deg)"><path d="M58 62 L60 14 L62 62 Z" fill="${arcColor}"/><circle cx="60" cy="60" r="5" fill="#cfd8d3"/></g>
+  </svg><div class="val">${val}</div><div class="lbl">${label}</div>`;
+}
+function arcZone(from,to,color){
+  const p=(f)=>{const ang=(-120+240*f-90)*Math.PI/180;return [60+46*Math.cos(ang),60+46*Math.sin(ang)]};
+  const [x1,y1]=p(from),[x2,y2]=p(to);const large=(to-from)*240>180?1:0;
+  return `<path d="M${x1} ${y1} A46 46 0 ${large} 1 ${x2} ${y2}" fill="none" stroke="${color}" stroke-width="5" opacity=".75"/>`;
+}
+function radar(n,next){
+  const blips=S.meetings.filter(m=>new Date(m.date+"T00:00:00")>=today()).slice(0,6).map((m,i)=>{const d=Math.max(0,Math.round((new Date(m.date+"T00:00:00")-today())/864e5));const r=Math.min(44,8+d*5);const ang=(i*67)*Math.PI/180;return `<circle cx="${60+r*Math.cos(ang)}" cy="${60+r*Math.sin(ang)}" r="3" fill="#5be0a6"><animate attributeName="opacity" values="1;.3;1" dur="1.6s" repeatCount="indefinite"/></circle>`}).join("");
+  return `<svg viewBox="0 0 120 120" aria-hidden="true">
+  <circle cx="60" cy="60" r="57" fill="#06120c" stroke="#2f3a35" stroke-width="4"/>
+  ${[15,30,45].map(r=>`<circle cx="60" cy="60" r="${r}" fill="none" stroke="#1f5c45" stroke-width="1"/>`).join("")}
+  <path d="M60 8V112M8 60H112" stroke="#1f5c45" stroke-width="1"/>
+  <g class="radar-sweep"><path d="M60 60 L60 8 A52 52 0 0 1 105 34 Z" fill="url(#rg)"/></g>
+  <defs><linearGradient id="rg" x1="0" x2="1"><stop offset="0" stop-color="#5be0a6" stop-opacity=".45"/><stop offset="1" stop-color="#5be0a6" stop-opacity="0"/></linearGradient></defs>
+  ${blips}</svg><div class="val">${next}</div><div class="lbl">RADAR · ${n} EN 7 DÍAS</div>`;
+}
+function alt(done,tot){
+  const pct=tot?done/tot:1;
+  return dial(pct,"ALTÍMETRO · MISIONES",`${done}/${tot}`,{unit:"FT × 1000",l:"0",r:"MAX"});
+}
+
+/* =================== Pantallas =================== */
+let tab="panel", openReqId=null;
+function header(sub){
+  const d=new Date();
+  return `<header class="top"><img src="logo.png" alt="SOCIAL"><div class="clock">${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")} COT<small>${sub}</small></div></header>`;
+}
+function lamps(st){
+  const L=(on,cls,txt)=>`<div class="lamp ${on?cls:""}">${txt}</div>`;
+  return `<div class="panel screw" style="padding:14px 10px 10px"><div class="annun">
+   ${L(st.over>0,"on-red","MASTER<br>WARNING")}
+   ${L(st.over===0&&st.soon>0,"on-amber","MASTER<br>CAUTION")}
+   ${L(st.level==="NORMAL","on-green","ALL SYSTEMS<br>NORMAL")}
+   ${L(st.pend>0,"on-amber","LOAD<br>INCOMPLETE")}
+   ${L(st.near.length>0,"on-green","RADAR<br>ALERT")}
+   ${L(st.tover>0,"on-red","MISSION<br>OVERDUE")}
+  </div></div>`;
+}
+function vPanel(){
+  const st=stats();
+  const cfg=S.bills.filter(b=>!b.setup).length; const fuelPct=cfg?st.paid/cfg:1;
+  const next=st.upcoming[0];
+  const lvlCls=st.level==="CRÍTICO"?"c-red":st.level==="PRECAUCIÓN"?"c-amber":"c-green";
+  const msgs=[];
+  S.bills.forEach(b=>{const s=billStatus(b);if(s.k==="over")msgs.push(`<span class="c-red">MASTER WARNING</span> — ${esc(b.name)} vencido hace ${-s.days} día(s).`);else if(s.k==="soon")msgs.push(`<span class="c-amber">MASTER CAUTION</span> — ${esc(b.name)} ${s.days===0?"vence hoy":"vence en "+s.days+" día(s)"}.`)});
+  if(st.pend)msgs.push(`<span class="c-amber">LOAD INCOMPLETE</span> — ${st.pend} producto(s) por comprar.`);
+  if(next&&next.date===iso(today()))msgs.push(`<span class="c-cyan">BRIEFING INCOMING</span> — ${esc(next.title)} hoy ${esc(next.time||"")}.`);
+  if(st.tover)msgs.push(`<span class="c-red">MISSION OVERDUE</span> — ${st.tover} misión(es) pasaron su fecha.`);
+  if(!msgs.length)msgs.push(`<span class="c-green">ALL SYSTEMS NORMAL</span> — Todos los sistemas operan correctamente.`);
+  return header("PANEL DE MANDO")+lamps(st)+
+  `<h2 class="scr">INSTRUMENTOS <b class="${lvlCls}">ESTADO: ${st.level}</b></h2>
+  <div class="gauges">
+   <div class="gauge" data-go="fuel">${dial(fuelPct,"COMBUSTIBLE · PAGOS",cfg?`${st.paid}/${cfg} PAGADOS`:"SIN CONFIGURAR",{unit:"FUEL",l:"E",r:"F",zones:arcZone(0,.25,"#ff4d3d")+arcZone(.25,.5,"#ffb020")+arcZone(.5,1,"#2f8a66"),color:st.over?"#ff4d3d":st.soon?"#ffb020":"#5be0a6"})}</div>
+   <div class="gauge" data-go="carga">${dial(Math.min(1,st.pend/40),"CARGA · POR COMPRAR",`${st.pend} ITEMS`,{unit:"LOAD",l:"0",r:"40",color:st.pend?"#ffb020":"#5be0a6"})}</div>
+   <div class="gauge" data-go="carga">${dial(st.items?st.done/st.items:1,"CHECKLIST · COMPRAS",st.items?`${Math.round(st.done/st.items*100)}%`:"SIN CARGA",{unit:"%",l:"0",r:"100"})}</div>
+   <div class="gauge" data-go="ops">${alt(st.tdone,st.ttot)}</div>
+   <div class="gauge" data-go="torre">${radar(st.near.length,next?`${fdate(next.date)} ${esc(next.time||"")}`:"CIELO DESPEJADO")}</div>
+   <div class="gauge" data-go="fuel"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="57" fill="#0a0f0d" stroke="#2f3a35" stroke-width="4"/><clipPath id="hz"><circle cx="60" cy="60" r="50"/></clipPath><g clip-path="url(#hz)" style="transform:rotate(${st.level==="NORMAL"?0:st.level==="PRECAUCIÓN"?-12:-24}deg);transform-origin:60px 60px;transition:transform 1s"><rect x="0" y="0" width="120" height="${st.level==="CRÍTICO"?70:60}" fill="#1d4f6e"/><rect x="0" y="${st.level==="CRÍTICO"?70:60}" width="120" height="70" fill="#5a3a1c"/><path d="M10 ${st.level==="CRÍTICO"?70:60}H110" stroke="#fff" stroke-width="1.5"/></g><path d="M34 60H52M68 60H86M60 56v8" stroke="#ffb020" stroke-width="3" stroke-linecap="round"/></svg><div class="val ${lvlCls}">${st.level}</div><div class="lbl">ESTADO DE VUELO</div></div>
+  </div>
+  <h2 class="scr">MENSAJES DE CABINA</h2>
+  <div class="panel"><div class="list" style="gap:10px;font:13px/1.5 var(--mono)">${msgs.map(m=>`<div>${m}</div>`).join("")}</div></div>`;
+}
+function vCarga(){
+  const r=S.reqs.find(x=>x.id===openReqId);
+  if(r) return vChecklist(r);
+  const pend=S.reqs.filter(x=>!x.sent), sent=S.reqs.filter(x=>x.sent).slice(-10).reverse();
+  const card=x=>{const n=x.items.length,d=x.items.filter(i=>i.status!=="pending").length;
+    return `<button class="row" style="width:100%;text-align:left" data-open="${x.id}"><div class="main"><div class="t">${esc(x.from)}${x.ex?'<span class="ex">EJEMPLO</span>':""}</div><div class="s">${new Date(x.date).toLocaleString("es-CO",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})} · ${n} ítems</div><div class="progress" style="margin-top:8px"><i style="width:${n?d/n*100:0}%"></i></div></div><span class="chip ${x.sent?"c-green":d?"c-amber":"c-cyan"}">${x.sent?"LOAD CONFIRMED":d?"IN PROGRESS":"LOAD RECEIVED"}</span></button>`};
+  return header("ABASTECIMIENTO")+
+  `<h2 class="scr">LISTA DE CARGA <b>${pend.length} ACTIVA(S)</b></h2>
+  <div class="list">${pend.length?pend.map(card).join(""):`<div class="empty">SIN SOLICITUDES DE SUMINISTRO<br>Cuando el trabajador envíe la requisición aparecerá aquí.</div>`}</div>
+  <h2 class="scr">CARGAS CERRADAS</h2>
+  <div class="list">${sent.length?sent.map(card).join(""):`<div class="empty">Aún no hay cargas cerradas.</div>`}</div>
+  <button class="btn primary fab" data-act="newReq">+ NUEVA SOLICITUD</button>`;
+}
+function vChecklist(r){
+  const n=r.items.length,d=r.items.filter(i=>i.status!=="pending").length,b=r.items.filter(i=>i.status==="bought").length;
+  const zones=[...new Set(r.items.map(i=>i.zone||"Otros"))];
+  return header("CHECKLIST DE COMPRA")+
+  `<div class="bar" style="justify-content:space-between;align-items:center;margin:6px 0 10px"><button class="btn sm ghost" data-act="back">‹ LISTA DE CARGA</button><span class="chip ${r.sent?"c-green":"c-amber"}">${r.sent?"LOAD CONFIRMED":"LOAD IN PROGRESS"}</span></div>
+  <div class="panel screw"><div style="padding-top:6px" class="t"><b>${esc(r.from)}</b>${r.ex?'<span class="ex">EJEMPLO</span>':""}</div>
+   <div class="note" style="margin:4px 0 10px">${b} comprados · ${r.items.filter(i=>i.status==="na").length} no disponibles · ${n-d} pendientes</div>
+   <div class="progress"><i style="width:${n?d/n*100:0}%"></i></div>
+   <div class="note" style="margin-top:10px">Toca el interruptor para marcar <span class="c-green">COMPRADO</span>. Tócalo otra vez para <span class="c-amber">NO DISPONIBLE</span>.</div></div>
+  ${zones.map(z=>`<div class="zone">${esc(z).toUpperCase()}</div><div class="list">${r.items.filter(i=>(i.zone||"Otros")===z).map(i=>`
+    <div class="row ${i.status!=="pending"?"done":""}"><div class="main"><div class="t">${esc(i.name)}</div><div class="s">${esc(i.qty||"")}${i.status==="na"?' · <span class="c-amber">NO DISPONIBLE</span>':i.status==="bought"?' · <span class="c-green">COMPRADO</span>':""}</div></div>
+    <button class="sw ${i.status==="bought"?"on":i.status==="na"?"na":""}" data-sw="${i.id}" aria-label="Cambiar estado de ${esc(i.name)}" ${r.sent?"disabled":""}></button></div>`).join("")}</div>`).join("")}
+  ${r.sent?`<div class="panel" style="margin-top:14px"><div class="zone" style="margin-top:0">NOTA DEL CIERRE</div><div class="note">${esc(r.note)||"Sin nota."}</div><div class="note" style="margin-top:6px">Enviado ${new Date(r.sentAt).toLocaleString("es-CO")}</div><div class="bar" style="margin-top:10px"><button class="btn sm" data-act="share">COMPARTIR REPORTE</button><button class="btn sm warn" data-act="delReq">ELIMINAR</button></div></div>`:
+  `<h2 class="scr">CIERRE DE CARGA</h2>
+   <div class="panel"><label class="zone" for="cnote" style="margin:0 0 8px;display:block">NOTA (OPCIONAL)</label>
+   <textarea id="cnote" rows="3" placeholder="Ej: no había Blue Curacao, llega mañana. El hielo lo traen a las 5 pm.">${esc(r.note||"")}</textarea>
+   <button class="btn primary block" style="margin-top:12px" data-act="send">ENVIAR REPORTE</button>
+   <button class="btn sm ghost" style="margin-top:8px;color:var(--mut)" data-act="delReq">Eliminar solicitud</button></div>`}`;
+}
+function vFuel(){
+  const list=S.bills.map(b=>({b,s:billStatus(b)})).sort((x,y)=>x.s.days-y.s.days);
+  return header("COMBUSTIBLE")+
+  `<h2 class="scr">PLAN DE PAGOS <b>${MES[new Date().getMonth()].toUpperCase()} ${new Date().getFullYear()}</b></h2>
+  ${S.billsHint?`<div class="panel" style="margin-bottom:10px"><div class="note">Toca cada servicio para poner su día de pago y el valor. Hasta que lo configures no genera alertas. <button class="btn sm" data-act="hideHint" style="margin-top:8px">ENTENDIDO</button></div></div>`:""}
+  <div class="list">${list.map(({b,s})=>`<div class="row ${s.k==="paid"?"done":""}"><button class="main" style="background:none;border:0;text-align:left;padding:0" data-bill="${b.id}"><div class="t">${esc(b.name)}</div><div class="s">${b.setup?"Toca para poner el día de pago":"Día "+b.day+" de cada mes"}${b.amount?" · "+cop(b.amount):""}</div></button>
+   <div style="display:grid;gap:6px;justify-items:end"><span class="chip ${s.cls}">${s.txt}</span>${s.k==="setup"?"":`<button class="btn sm ${s.k==="paid"?"ghost":"primary"}" data-pay="${b.id}">${s.k==="paid"?"DESHACER":"MARCAR PAGADO"}</button>`}</div></div>`).join("")}</div>
+  <div class="bar" style="margin-top:14px"><button class="btn" data-act="icsBills">AÑADIR AVISOS AL CALENDARIO</button></div>
+  <div class="note" style="margin-top:8px">Esto crea los recordatorios mensuales en el Calendario del iPhone, con aviso 3 días antes y el día del pago, para que te lleguen notificaciones aunque la app esté cerrada.</div>
+  <button class="btn primary fab" data-act="newBill">+ REGISTRAR PAGO</button>`;
+}
+function vTorre(){
+  const t=iso(today());
+  const up=S.meetings.filter(m=>m.date>=t).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+  const past=S.meetings.filter(m=>m.date<t).sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time)).slice(0,5);
+  const card=m=>`<button class="row" style="width:100%;text-align:left" data-meet="${m.id}"><div class="main"><div class="t">${esc(m.title)}${m.ex?'<span class="ex">EJEMPLO</span>':""}</div><div class="s">${fdate(m.date)} · ${esc(m.time||"--:--")}${m.place?" · "+esc(m.place):""}</div></div><span class="chip ${m.date===t?"c-cyan":m.date<t?"c-mut":"c-green"}">${m.date===t?"HOY":m.date<t?"ATERRIZADO":"PROGRAMADO"}</span></button>`;
+  return header("TORRE DE CONTROL")+
+  `<h2 class="scr">PLAN DE VUELO <b>${up.length} PRÓXIMOS</b></h2>
+  <div class="list">${up.length?up.map(card).join(""):`<div class="empty">CIELO DESPEJADO<br>No hay reuniones programadas.</div>`}</div>
+  ${past.length?`<h2 class="scr">VUELOS ANTERIORES</h2><div class="list">${past.map(card).join("")}</div>`:""}
+  <button class="btn primary fab" data-act="newMeet">+ AGENDAR REUNIÓN</button>`;
+}
+function vOps(){
+  const t=iso(today());
+  const open=S.tasks.filter(x=>!x.done).sort((a,b)=>(a.due||"9").localeCompare(b.due||"9")), done=S.tasks.filter(x=>x.done).slice(-8).reverse();
+  const card=x=>{const late=!x.done&&x.due&&x.due<t;return `<div class="row ${x.done?"done":""}"><button class="main" style="background:none;border:0;text-align:left;padding:0" data-task="${x.id}"><div class="t">${esc(x.title)}${x.ex?'<span class="ex">EJEMPLO</span>':""}</div><div class="s">${x.due?(late?'<span class="c-red">VENCIÓ </span>':"")+fdate(x.due):"Sin fecha"}</div></button><button class="sw ${x.done?"on":""}" data-tk="${x.id}" aria-label="Marcar ${esc(x.title)}"></button></div>`};
+  return header("OPERACIONES")+
+  `<h2 class="scr">MISIONES PENDIENTES <b>${open.length}</b></h2>
+  <div class="list">${open.length?open.map(card).join(""):`<div class="empty">MISSION ACCOMPLISHED<br>No hay misiones pendientes.</div>`}</div>
+  <h2 class="scr">MISIONES CUMPLIDAS</h2>
+  <div class="list">${done.length?done.map(card).join(""):`<div class="empty">Aún no hay misiones cumplidas.</div>`}</div>
+  <button class="btn primary fab" data-act="newTask">+ NUEVA MISIÓN</button>`;
+}
+
+/* =================== Render =================== */
+function render(){
+  const v={panel:vPanel,carga:vCarga,fuel:vFuel,torre:vTorre,ops:vOps}[tab]();
+  $("#app").innerHTML=v;
+  document.querySelectorAll("nav.tabs button").forEach(b=>{b.classList.toggle("act",b.dataset.tab===tab);b.querySelector(".dot")?.remove()});
+  const st=stats();
+  const dot=(t,red)=>{const b=document.querySelector(`nav.tabs [data-tab="${t}"]`);const s=document.createElement("span");s.className="dot"+(red?" red":"");b.appendChild(s)};
+  if(st.pend)dot("carga");
+  if(st.over)dot("fuel",true);else if(st.soon)dot("fuel");
+  if(st.near.some(m=>m.date===iso(today())))dot("torre");
+  if(st.tover)dot("ops",true);
+  try{navigator.setAppBadge&&(st.pend+st.over+st.soon?navigator.setAppBadge(st.pend+st.over+st.soon):navigator.clearAppBadge())}catch(e){}
+}
+function go(t){tab=t;openReqId=null;render();window.scrollTo(0,0)}
+function toast(msg){const d=document.createElement("div");d.className="toast";d.textContent=msg;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
+function buzz(){try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}}
+
+/* =================== Hojas (formularios) =================== */
+function sheet(html,onSubmit){
+  $("#sheet").innerHTML=`<form id="sf" style="display:grid;gap:12px">${html}<div class="bar" style="margin-top:4px"><button type="button" class="btn" data-act="closeSheet" style="flex:1">CANCELAR</button><button class="btn primary" style="flex:1">CONFIRMAR</button></div></form>`;
+  $("#sheetBg").hidden=false;
+  $("#sf").onsubmit=e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target));if(onSubmit(f)!==false){closeSheet();save();render()}};
+}
+function closeSheet(){$("#sheetBg").hidden=true;$("#sheet").innerHTML=""}
+$("#sheetBg").addEventListener("click",e=>{if(e.target.id==="sheetBg")closeSheet()});
+
+function formReq(){
+  sheet(`<h3>NUEVA SOLICITUD DE SUMINISTRO</h3>
+  <label>QUIÉN LA ENVÍA<input name="from" required placeholder="Ej: Barra, Cocina, Laura"></label>
+  <label>PRODUCTOS (UNO POR LÍNEA)<textarea name="items" rows="7" required placeholder="2 Vodka&#10;3 kg Limones&#10;6 bolsas Hielo"></textarea></label>
+  <div class="note">Puedes pegar el mensaje de Telegram de la requisición tal cual: la app separa zonas y productos.</div>`,f=>{
+    const items=parseItems(f.items); if(!items.length){toast("AGREGA AL MENOS UN PRODUCTO");return false}
+    S.reqs.push({id:uid(),from:f.from.trim(),date:new Date().toISOString(),sent:false,note:"",items}); toast("LOAD RECEIVED · NUEVA REQUISICIÓN");
+  });
+}
+function parseItems(txt){
+  const out=[];let zone="Otros";
+  txt.split(/\n/).map(l=>l.trim()).filter(Boolean).forEach(l=>{
+    if(/^(🧾|📅|👤|📝)/u.test(l)||/REQUISICI[ÓO]N SOCIAL/i.test(l))return;
+    const clean=l.replace(/<[^>]+>/g,"").replace(/^[•\-\*]\s*/,"");
+    if(!/^[•\-\*]/.test(l)&&!/\d/.test(clean)&&/^\p{Extended_Pictographic}/u.test(l)){zone=clean.replace(/^\p{Extended_Pictographic}️?\s*/u,"").trim();return}
+    let name=clean,qty="";
+    const m1=clean.match(/^(.*?)\s*[—–-]\s*(.+)$/); // Producto — 2 botella
+    const m2=clean.match(/^(\d+[.,]?\d*\s*[a-zA-ZáéíóúÁÉÍÓÚ]*)\s+(.+)$/); // 2 kg Limones
+    if(m1){name=m1[1];qty=m1[2]}else if(m2){qty=m2[1];name=m2[2]}
+    out.push({id:uid(),zone,name:name.trim(),qty:qty.trim(),status:"pending"});
+  });
+  return out;
+}
+function formBill(b){
+  const isNew=!b; b=b||{name:"",day:1,amount:"",paid:{}};
+  sheet(`<h3>${isNew?"REGISTRAR PAGO":"SISTEMA A BORDO · "+esc(b.name).toUpperCase()}</h3>
+  <label>SERVICIO<input name="name" required value="${esc(b.name)}" placeholder="Ej: Arriendo, Luz, Agua"></label>
+  <div class="grid2"><label>DÍA DE PAGO<input name="day" type="number" min="1" max="31" required value="${b.day}" inputmode="numeric"></label>
+  <label>VALOR (OPCIONAL)<input name="amount" inputmode="numeric" value="${b.amount||""}" placeholder="$"></label></div>
+  ${isNew?"":`<button type="button" class="btn warn" data-act="delBill" data-id="${b.id}">ELIMINAR ESTE PAGO</button>`}`,f=>{
+    const v={name:f.name.trim(),day:Math.min(31,Math.max(1,parseInt(f.day)||1)),amount:String(f.amount||"").replace(/\D/g,""),setup:false};
+    if(isNew)S.bills.push({id:uid(),...v,paid:{}});else Object.assign(b,v);
+    toast(isNew?"PAGO PROGRAMADO":"GUARDADO");
+  });
+}
+function formMeet(m){
+  const isNew=!m; m=m||{title:"",date:iso(today()),time:"",place:"",notes:""};
+  sheet(`<h3>${isNew?"AGENDAR REUNIÓN":"BRIEFING"}</h3>
+  <label>TÍTULO<input name="title" required value="${esc(m.title)}" placeholder="Ej: Reunión con proveedor"></label>
+  <div class="grid2"><label>FECHA<input name="date" type="date" required value="${m.date}"></label><label>HORA<input name="time" type="time" value="${m.time||""}"></label></div>
+  <label>LUGAR<input name="place" value="${esc(m.place||"")}" placeholder="Ej: Social"></label>
+  <label>NOTAS<textarea name="notes" rows="3">${esc(m.notes||"")}</textarea></label>
+  ${isNew?"":`<div class="bar"><button type="button" class="btn" data-act="icsMeet" data-id="${m.id}">AÑADIR A CALENDARIO</button><button type="button" class="btn warn" data-act="delMeet" data-id="${m.id}">ELIMINAR</button></div>`}`,f=>{
+    const v={title:f.title.trim(),date:f.date,time:f.time,place:f.place.trim(),notes:f.notes.trim(),ex:false};
+    if(isNew){const n={id:uid(),...v};S.meetings.push(n);setTimeout(()=>ics([meetEvent(n)],"reunion"),300)}else Object.assign(m,v);
+    toast(isNew?"FLIGHT PLAN FILED":"FLIGHT RESCHEDULED");
+  });
+}
+function formTask(x){
+  const isNew=!x; x=x||{title:"",due:""};
+  sheet(`<h3>${isNew?"NUEVA MISIÓN":"ORDEN DE OPERACIÓN"}</h3>
+  <label>MISIÓN<input name="title" required value="${esc(x.title)}" placeholder="Ej: Cambiar bombillos de la barra"></label>
+  <label>FECHA LÍMITE (OPCIONAL)<input name="due" type="date" value="${x.due||""}"></label>
+  ${isNew?"":`<button type="button" class="btn warn" data-act="delTask" data-id="${x.id}">ELIMINAR MISIÓN</button>`}`,f=>{
+    const v={title:f.title.trim(),due:f.due,ex:false};
+    if(isNew)S.tasks.push({id:uid(),...v,done:false});else Object.assign(x,v);
+    toast(isNew?"MISIÓN ASIGNADA":"GUARDADO");
+  });
+}
+
+/* =================== Reporte y calendario =================== */
+function reportText(r){
+  const by=s=>r.items.filter(i=>i.status===s);
+  let t=`✈️ SOCIAL APP · CIERRE DE CARGA\n${esc(r.from)} · ${new Date(r.sentAt||Date.now()).toLocaleString("es-CO",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}\n\n`;
+  if(by("bought").length)t+=`✅ COMPRADO\n${by("bought").map(i=>`• ${i.name}${i.qty?" — "+i.qty:""}`).join("\n")}\n\n`;
+  if(by("na").length)t+=`⚠️ NO DISPONIBLE\n${by("na").map(i=>`• ${i.name}${i.qty?" — "+i.qty:""}`).join("\n")}\n\n`;
+  if(by("pending").length)t+=`⏳ SIN COMPRAR\n${by("pending").map(i=>`• ${i.name}${i.qty?" — "+i.qty:""}`).join("\n")}\n\n`;
+  if(r.note)t+=`📝 NOTA: ${r.note}\n`;
+  return t.trim();
+}
+async function share(text){
+  try{if(navigator.share){await navigator.share({text});return}}catch(e){if(e.name==="AbortError")return}
+  try{await navigator.clipboard.writeText(text);toast("REPORTE COPIADO")}catch(e){toast("NO SE PUDO COMPARTIR")}
+}
+const pad=n=>String(n).padStart(2,"0");
+function meetEvent(m){
+  const [y,mo,d]=m.date.split("-");const [h,mi]=(m.time||"09:00").split(":");
+  return {uid:m.id,title:m.title,start:`${y}${mo}${d}T${h}${mi}00`,dur:"PT1H",loc:m.place,desc:m.notes,alarms:["-PT1H","-PT15M"]};
+}
+function ics(events,name){
+  const now=new Date(),st=`${now.getUTCFullYear()}${pad(now.getUTCMonth()+1)}${pad(now.getUTCDate())}T${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}00Z`;
+  const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//SOCIAL APP//ES","CALSCALE:GREGORIAN"];
+  events.forEach(e=>{L.push("BEGIN:VEVENT",`UID:${e.uid}@socialapp`,`DTSTAMP:${st}`,`DTSTART;TZID=America/Bogota:${e.start}`,e.allday?`DTEND;TZID=America/Bogota:${e.end}`:`DURATION:${e.dur}`,`SUMMARY:${e.title}`);
+    if(e.rrule)L.push("RRULE:"+e.rrule); if(e.loc)L.push("LOCATION:"+e.loc); if(e.desc)L.push("DESCRIPTION:"+e.desc.replace(/\n/g,"\\n"));
+    (e.alarms||[]).forEach(a=>L.push("BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${e.title}`,`TRIGGER:${a}`,"END:VALARM"));
+    L.push("END:VEVENT")});
+  L.push("END:VCALENDAR");
+  const blob=new Blob([L.join("\r\n")],{type:"text/calendar"});
+  const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`social-${name}.ics`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove()},4000);
+}
+function billEvents(){
+  const t=today();
+  return S.bills.filter(b=>!b.setup).map(b=>{const d=new Date(t.getFullYear(),t.getMonth(),b.day);if(d<t)d.setMonth(d.getMonth()+1);
+    return {uid:b.id,title:`💳 Pagar ${b.name}${b.amount?" "+cop(b.amount):""} · Social`,start:`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T090000`,dur:"PT30M",rrule:`FREQ=MONTHLY;BYMONTHDAY=${b.day}`,alarms:["-P3D","-PT1H"]}});
+}
+
+/* =================== Eventos =================== */
+document.addEventListener("click",e=>{
+  const el=e.target.closest("button,[data-go],[data-open]");if(!el)return;
+  const d=el.dataset;
+  if(d.tab){buzz();go(d.tab);return}
+  if(d.go){buzz();go(d.go);return}
+  if(d.open){openReqId=d.open;render();window.scrollTo(0,0);return}
+  if(d.sw){const r=S.reqs.find(x=>x.id===openReqId);const i=r.items.find(x=>x.id===d.sw);i.status=i.status==="pending"?"bought":i.status==="bought"?"na":"pending";buzz();save();
+    const y=window.scrollY;render();window.scrollTo(0,y);
+    if(r.items.every(x=>x.status!=="pending"))toast("CHECKLIST COMPLETE");return}
+  if(d.pay){const b=S.bills.find(x=>x.id===d.pay);const k=ym();if(b.paid[k])delete b.paid[k];else{b.paid[k]=new Date().toISOString();toast("COMBUSTIBLE CARGADO · "+b.name.toUpperCase())}buzz();save();render();return}
+  if(d.bill){formBill(S.bills.find(x=>x.id===d.bill));return}
+  if(d.meet){formMeet(S.meetings.find(x=>x.id===d.meet));return}
+  if(d.task){formTask(S.tasks.find(x=>x.id===d.task));return}
+  if(d.tk){const x=S.tasks.find(t=>t.id===d.tk);x.done=!x.done;buzz();save();render();if(x.done)toast("MISSION ACCOMPLISHED");return}
+  const act=d.act;if(!act)return;
+  const r=S.reqs.find(x=>x.id===openReqId);
+  ({
+    newReq:formReq,newBill:()=>formBill(),newMeet:()=>formMeet(),newTask:()=>formTask(),
+    closeSheet,back:()=>{openReqId=null;render()},
+    hideHint:()=>{S.billsHint=false;save();render()},
+    icsBills:()=>{ics(billEvents(),"pagos");toast("ABRE EL ARCHIVO Y TOCA 'AÑADIR TODO'")},
+    icsMeet:()=>{const m=S.meetings.find(x=>x.id===d.id);ics([meetEvent(m)],"reunion")},
+    send:()=>{r.note=$("#cnote").value.trim();const p=r.items.filter(i=>i.status==="pending").length;
+      $("#sheet").innerHTML=`<h3>CONFIRMAR CIERRE DE CARGA</h3><div class="note">${p?`<span class="c-amber">Quedan ${p} producto(s) sin marcar.</span> Se enviarán como "sin comprar".`:'<span class="c-green">Todo verificado.</span>'}${r.note?"<br>Nota: "+esc(r.note):""}</div><div class="bar"><button class="btn" data-act="closeSheet" style="flex:1">CANCELAR</button><button class="btn primary" data-act="confirmSend" style="flex:1">ENVIAR</button></div>`;$("#sheetBg").hidden=false},
+    confirmSend:()=>{r.sent=true;r.sentAt=new Date().toISOString();save();closeSheet();render();toast("LOAD CONFIRMED · REPORTE ENVIADO");setTimeout(()=>share(reportText(r)),400)},
+    share:()=>share(reportText(r)),
+    delReq:()=>{$("#sheet").innerHTML=`<h3>ELIMINAR SOLICITUD</h3><div class="note">Se borra "${esc(r.from)}" y sus ${r.items.length} productos. No se puede deshacer.</div><div class="bar"><button class="btn" data-act="closeSheet" style="flex:1">CANCELAR</button><button class="btn warn" data-act="confirmDelReq" style="flex:1">ELIMINAR</button></div>`;$("#sheetBg").hidden=false},
+    confirmDelReq:()=>{S.reqs=S.reqs.filter(x=>x.id!==openReqId);openReqId=null;save();closeSheet();render();toast("SOLICITUD ELIMINADA")},
+    delBill:()=>{S.bills=S.bills.filter(x=>x.id!==d.id);save();closeSheet();render()},
+    delMeet:()=>{S.meetings=S.meetings.filter(x=>x.id!==d.id);save();closeSheet();render()},
+    delTask:()=>{S.tasks=S.tasks.filter(x=>x.id!==d.id);save();closeSheet();render()}
+  })[act]?.();
+});
+document.addEventListener("input",e=>{if(e.target.id==="cnote"){const r=S.reqs.find(x=>x.id===openReqId);if(r){r.note=e.target.value;save()}}});
+
+/* =================== Arranque =================== */
+const h=new Date().getHours();
+$("#helloTitle").textContent=(h<12?"BUENOS DÍAS":h<19?"BUENAS TARDES":"BUENAS NOCHES")+", CAPITÁN.";
+setTimeout(()=>{$("#hello").hidden=false;$("#boot").classList.add("out");setTimeout(()=>$("#boot").remove(),600)},matchMedia("(prefers-reduced-motion: reduce)").matches?300:4300);
+$("#startBtn").onclick=()=>{buzz();$("#hello").hidden=true;$("#app").hidden=false;$("#tabs").hidden=false;render()};
+setInterval(()=>{const a=document.activeElement;if(!$("#app").hidden&&$("#sheetBg").hidden&&!(a&&/INPUT|TEXTAREA/.test(a.tagName))){const y=scrollY;render();scrollTo(0,y)}},60000);
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script>
+</body>
+</html>
