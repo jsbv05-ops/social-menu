@@ -827,12 +827,20 @@ $("#enviar").onclick=()=>{
  $("#volver").onclick=()=>$("#modal").classList.remove("show");
  $("#conf").onclick=()=>enviar(quien,its,nota);
 };
+/* Envía la misma requisición a SOCIAL APP: le aparece al capitán en CARGA como solicitud nueva */
+const SOCIAL_APP="https://script.google.com/macros/s/AKfycbzvw8TvV-YjhiMt2n1akTVIOjz1z7Cdz-QzY8gDkEnF-IRFs9AOmyVAtGVVl3Wyey2c/exec";
+async function toCaptain(body,its){
+ const req={id:"req-"+body.id,from:body.quien+" · para "+body.para,date:new Date().toISOString(),sent:false,note:"",memo:body.nota||"",u:Date.now(),
+  items:its.map((i,n)=>({id:"it-"+body.id+"-"+n,zone:i.cat,name:i.producto,qty:(i.cantidad+" "+(i.unidad||"")).trim(),status:"pending"}))};
+ try{await fetch(SOCIAL_APP,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({state:{del:{},reqs:[req]}})})}catch(e){}
+}
 async function enviar(quien,its,nota){
  const c=$("#conf");c.disabled=true;c.textContent="Enviando…";
  const body={clave:CLAVE,id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),quien,para:fechaTxt,nota,items:its.map(({ico,...r})=>r)};
  try{
   if(API.includes("example.invalid")){await new Promise(r=>setTimeout(r,700));}else{const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body)});
   const j=await r.json(); if(!j.ok)throw new Error(j.error||"Error");}
+  await toCaptain(body,its);
   Q={};EXTRA=[];$("#nota").value="";save();render();
   $("#sheet").innerHTML=`<div class="done"><div class="big">✅</div><h3>Requisición enviada</h3><p class="sub">Quedó en la hoja de cálculo y le llegó al grupo de Telegram.</p><div class="btns"><button class="ok" onclick="document.getElementById('modal').classList.remove('show')">Listo</button></div></div>`;
  }catch(e){c.disabled=false;c.textContent="Reintentar";$("#err").textContent="No se pudo enviar ("+e.message+"). Revisa el internet y vuelve a intentar; lo marcado no se pierde.";}
