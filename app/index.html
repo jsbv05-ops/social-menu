@@ -156,13 +156,15 @@ h2.scr b{color:var(--fg)}
 .fab{position:fixed;right:14px;bottom:calc(86px + env(safe-area-inset-bottom));z-index:20}
 
 /* Barra inferior */
-nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--noise),linear-gradient(180deg,#151615,#0a0b0a);border-top:1px solid #000;box-shadow:inset 0 1px 0 #ffffff12;display:grid;grid-template-columns:repeat(6,1fr);padding:6px 2px calc(6px + env(safe-area-inset-bottom))}
-nav.tabs button{background:none;border:0;padding:6px 0 4px;display:grid;justify-items:center;gap:4px;font:700 8px var(--mono);letter-spacing:.3px;color:var(--mut);position:relative}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--noise),linear-gradient(180deg,#151615,#0a0b0a);border-top:1px solid #000;box-shadow:inset 0 1px 0 #ffffff12;display:grid;grid-template-columns:repeat(7,1fr);padding:6px 1px calc(6px + env(safe-area-inset-bottom))}
+nav.tabs button{background:none;border:0;padding:6px 0 4px;display:grid;justify-items:center;gap:4px;font:700 7.2px var(--mono);letter-spacing:0;color:var(--mut);position:relative}
 nav.tabs button svg{width:22px;height:22px}
 nav.tabs button::after{content:"";width:18px;height:3px;border-radius:2px;background:#1e201f}
 nav.tabs button.act{color:var(--fg)}
 nav.tabs button.act::after{background:#7fd0a9;box-shadow:0 0 6px #7fd0a988}
 nav.tabs .dot{position:absolute;top:3px;right:calc(50% - 17px);width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 6px var(--amber)}
+nav.tabs .dot.red,.segdot.red{background:var(--red)!important;box-shadow:0 0 6px var(--red)!important}
+.segdot{position:absolute;top:6px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 6px var(--amber);animation:blink 1.4s infinite}
 nav.tabs .dot.red{background:var(--red);box-shadow:0 0 6px var(--red)}
 
 /* Hoja */
@@ -247,6 +249,7 @@ nav.tabs .dot.red{background:var(--red);box-shadow:0 0 6px var(--red)}
   <button data-tab="carga"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 7h18l-2 12H5L3 7zM8 7V5a4 4 0 018 0v2"/></svg>CARGA</button>
   <button data-tab="crew"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.6 3-5.5 6-5.5s5.4 1.9 6 5.5M16 5.5a3 3 0 010 5.6M18 14.8c1.8.7 2.8 2.4 3.1 5.2"/></svg>TRIPULACIÓN</button>
   <button data-tab="spoiler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="9" width="18" height="11" rx="1.5"/><path d="M6 9V5h12v4M7 13h4M7 16h2M15 13h2v3h-2z"/></svg>SPOILER</button>
+  <button data-tab="bodega"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 2h4v4.5c0 .8.6 1.3 1.2 1.8C16.4 9.3 17 10.6 17 12v8.5a1.5 1.5 0 01-1.5 1.5h-7A1.5 1.5 0 017 20.5V12c0-1.4.6-2.7 1.8-3.7.6-.5 1.2-1 1.2-1.8V2zM7 14h10"/></svg>BODEGA</button>
   <button data-tab="fuel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 21V5a2 2 0 012-2h6a2 2 0 012 2v16M3 21h14M15 9h2a2 2 0 012 2v6a1.5 1.5 0 003 0V8l-3-3M8 7h4"/></svg>FUEL</button>
   <button data-tab="torre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 21l1-10h4l1 10M7 11h10l-2-5H9l-2 5zM12 6V3M8 21h8"/></svg>TORRE</button>
 </nav>
@@ -257,7 +260,7 @@ nav.tabs .dot.red{background:var(--red);box-shadow:0 0 6px var(--red)}
 /* =================== Datos =================== */
 const KEY="socialapp_v3";
 const SYNC_URL="https://script.google.com/macros/s/AKfycbzvw8TvV-YjhiMt2n1akTVIOjz1z7Cdz-QzY8gDkEnF-IRFs9AOmyVAtGVVl3Wyey2c/exec";
-const COLS=["reqs","bills","meetings","tasks","crew","closes"];
+const COLS=["reqs","bills","meetings","tasks","crew","closes","liq","mov"];
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -288,13 +291,15 @@ function seed(){
     bills:["Arriendo","Luz","Agua","Internet"].map(n=>({id:"bill-"+n.toLowerCase(),name:n,day:1,amount:"",setup:true,paid:{}})),
     meetings:[],
     tasks:[],
-    crew:seedCrew(), closes:[], billsHint:true
+    crew:seedCrew(), closes:[], liq:[], mov:[], billsHint:true
   };
 }
 let S; try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S) S=seed();
 if(!S.crew) S.crew=seedCrew();
 if(!S.closes) S.closes=[];
+if(!S.liq) S.liq=[];
+if(!S.mov) S.mov=[];
 S.bills=S.bills.filter(b=>!(b.name==="Gas"&&b.setup));
 if(!S.del) S.del={};
 /* ---- Sincronización entre dispositivos (Google Sheets) ----
@@ -416,7 +421,7 @@ function horizon(owed){
 }
 
 /* =================== Pantallas =================== */
-let tab="panel", openReqId=null, openCrewId=null, period="quincena", torreView="agenda";
+let tab="panel", openReqId=null, openCrewId=null, openLiqId=null, bodView="stock", period="quincena", torreView="agenda";
 function header(sub){const d=new Date();return `<header class="top"><img src="logo.png" alt="SOCIAL"><div class="clock">${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}<small>${sub} <span id="sy" class="sy ${syncState}"></span></small></div></header>`}
 function lamps(st){
   const L=(on,cls,txt)=>`<div class="lamp ${on?cls:""}">${txt}</div>`;
@@ -431,6 +436,7 @@ function vPanel(){
   const msgs=[];
   S.bills.forEach(b=>{const s=billStatus(b);if(s.k==="over")msgs.push(`<span class="c-red">MASTER WARNING</span> · ${esc(b.name)} vencido hace ${-s.days} día(s).`);else if(s.k==="soon")msgs.push(`<span class="c-amber">MASTER CAUTION</span> · ${esc(b.name)} ${s.days===0?"vence hoy":"vence en "+s.days+" día(s)"}.`)});
   if(st.pend)msgs.push(`<span class="c-amber">LOAD INCOMPLETE</span> · ${st.pend} producto(s) por comprar.`);
+  {const b=bodTotals();if(b.bod||b.soc)msgs.push(`<span class="t-white">BODEGA</span> · ${fmtQ(b.bod)} botella(s) en bodega y ${fmtQ(b.soc)} en Social.`)}
   if(st.owed)msgs.push(`<span class="t-white">TRIPULACIÓN</span> · ${st.owed} persona(s) con saldo pendiente.`);
   if(!st.closedToday&&new Date().getHours()>=18)msgs.push(`<span class="c-amber">SPOILER</span> · Falta el cierre de caja de hoy.`);
   if(next&&next.date===iso(today()))msgs.push(`<span class="c-green">BRIEFING</span> · ${esc(next.title)} hoy ${esc(next.time||"")}.`);
@@ -523,6 +529,100 @@ function vSpoiler(){
   <div class="list">${all.length?all.map(c=>`<button class="row" style="width:100%;text-align:left" data-close="${c.id}"><div class="main"><div class="t">${fdate(c.date)}</div><div class="s">${c.resp?esc(c.resp)+" · ":""}ventas ${cop(ventas(c))}</div></div>${dTag(c)}</button>`).join(""):`<div class="empty">SIN CIERRES REGISTRADOS<br>Al cerrar el día, toca "+ SPOILER DE HOY".</div>`}</div>
   <button class="btn primary fab" data-act="newClose">+ SPOILER DE HOY</button>`;
 }
+/* =================== BODEGA · inventario de licores ===================
+   Stock por ubicación (bodega propia / Social) calculado desde los movimientos.
+   Llevar a Social = Social te debe (cantidad × precio a Social). Pagos y devoluciones bajan la deuda. */
+const LIQ_CATS=["Ron","Whisky","Ginebra","Vodka","Tequila","Aguardiente","Brandy","Licor","Vino","Otro"];
+const MOVT={compra:{l:"ENTRADA A BODEGA",c:"t-green",s:"+"},traslado:{l:"LLEVADO A SOCIAL",c:"t-amber",s:"→"},devolucion:{l:"DEVUELTO A BODEGA",c:"t-white",s:"←"},consumo:{l:"GASTADO EN SOCIAL",c:"t-mut",s:"−"},baja:{l:"DADO DE BAJA",c:"t-red",s:"×"},pago:{l:"PAGO DE SOCIAL",c:"t-green",s:"$"}};
+const fmtQ=n=>(Math.round(n*100)/100).toLocaleString("es-CO");
+function stockOf(pid){let b=0,so=0;S.mov.forEach(m=>{if(m.pid!==pid)return;const q=+m.qty||0;
+  if(m.type==="compra")b+=q;else if(m.type==="traslado"){b-=q;so+=q}else if(m.type==="devolucion"){so-=q;b+=q}
+  else if(m.type==="consumo")so-=q;else if(m.type==="baja"){if(m.at==="social")so-=q;else b-=q}});return {b,so}}
+function socialDebt(){return S.mov.reduce((a,m)=>m.type==="traslado"?a+(+m.qty||0)*(+m.price||0):m.type==="devolucion"?a-(+m.qty||0)*(+m.price||0):m.type==="pago"?a-(+m.amount||0):a,0)}
+function bodTotals(){let bod=0,soc=0,val=0;S.liq.forEach(p=>{const s=stockOf(p.id);bod+=s.b;soc+=s.so;val+=s.b*(+p.cost||0)});return {bod,soc,val}}
+const liqName=id=>{const p=S.liq.find(x=>x.id===id);return p?p.name:"(producto borrado)"};
+function vBodega(){
+  const p=S.liq.find(x=>x.id===openLiqId); if(p) return vLiq(p);
+  const debt=socialDebt(), t=bodTotals();
+  const seg=`<div class="seg" style="margin:14px 2px 4px">${[["stock","EXISTENCIAS"],["movs","MOVIMIENTOS"]].map(([k,l])=>`<button data-bv="${k}" class="${bodView===k?"act":""}">${l}</button>`).join("")}</div>`;
+  let body="";
+  if(bodView==="movs"){
+    const ms=[...S.mov].sort((a,b)=>(b.date+b.id).localeCompare(a.date+a.id)).slice(0,80);
+    body=`<div class="plate" style="padding:4px 12px">${ms.length?ms.map(m=>{const T=MOVT[m.type]||{l:m.type,c:"t-mut",s:""};
+      const right=m.type==="pago"?cop(m.amount):`${T.s} ${fmtQ(m.qty)}`;
+      const sub=m.type==="pago"?(m.note||"Abono de Social"):`${esc(liqName(m.pid))}${m.type==="baja"?" · en "+(m.at==="social"?"Social":"bodega"):""}${m.type==="traslado"||m.type==="devolucion"?" · "+cop((+m.qty||0)*(+m.price||0)):""}`;
+      return `<button class="entry" style="width:100%;background:none;border:0;border-bottom:1px solid #1e1f1e;text-align:left;color:inherit" data-mov="${m.id}"><span class="d">${sdate(m.date)}</span><span class="c"><span class="tag ${T.c}" style="padding:3px 6px">${T.l}</span><br><span style="font-size:14px">${sub}</span>${m.note&&m.type!=="pago"?`<br><span style="font:11px var(--mono);color:var(--mut)">${esc(m.note)}</span>`:""}</span><span class="a">${right}</span></button>`}).join(""):`<div class="empty" style="border:0">Sin movimientos todavía.</div>`}</div>`;
+  } else {
+    const cats=LIQ_CATS.filter(c=>S.liq.some(x=>(x.cat||"Otro")===c));
+    body=S.liq.length?cats.map(c=>`<div class="zone">${c.toUpperCase()}</div><div class="list">${S.liq.filter(x=>(x.cat||"Otro")===c).sort((a,b)=>a.name.localeCompare(b.name)).map(x=>{const s=stockOf(x.id);
+      return `<button class="row" style="width:100%;text-align:left" data-liq="${x.id}"><div class="main"><div class="t">${esc(x.name)}</div><div class="s">${x.ml?x.ml+" ml":""}${x.price?" · a Social "+cop(x.price):""}</div></div>
+      <div style="display:grid;grid-template-columns:auto auto;gap:4px 10px;text-align:right;font:700 9px var(--mono);letter-spacing:1px;color:var(--mut);align-items:center">BODEGA<b style="font-size:17px;color:${s.b>0?"var(--fg)":"var(--dim)"}">${fmtQ(s.b)}</b>SOCIAL<b style="font-size:17px;color:${s.so>0?"#9ccdb5":"var(--dim)"}">${fmtQ(s.so)}</b></div></button>`}).join("")}</div>`).join(""):`<div class="empty">BODEGA VACÍA<br>Agrega tus licores con "+ PRODUCTO" y luego registra la entrada.</div>`;
+  }
+  return header("BODEGA · LICORES")+
+  `<div class="plate bolts"><div class="etch" style="padding:0 10px">SOCIAL TE DEBE</div><div class="lcd ${debt>0?"c-amber":"c-green"}" style="padding:4px 10px 0">${cop(Math.max(0,debt))}</div>
+   <div class="kv"><div><span>EN BODEGA</span><b>${fmtQ(t.bod)}</b></div><div><span>EN SOCIAL</span><b class="c-green">${fmtQ(t.soc)}</b></div><div><span>VALOR BODEGA</span><b style="font-size:11px">${cop(t.val)}</b></div></div>
+   <div class="bar" style="margin-top:12px"><button class="btn sm" style="flex:1" data-act="movCompra">+ ENTRADA</button><button class="btn sm primary" style="flex:1" data-act="movTraslado">LLEVAR A SOCIAL</button><button class="btn sm" style="flex:1" data-act="movPago">PAGO</button></div></div>
+  ${seg}${body}
+  <button class="btn primary fab" data-act="newLiq">+ PRODUCTO</button>`;
+}
+function vLiq(p){
+  const s=stockOf(p.id), ms=S.mov.filter(m=>m.pid===p.id).sort((a,b)=>(b.date+b.id).localeCompare(a.date+a.id));
+  return header("BODEGA · "+p.name.toUpperCase())+
+  `<div class="bar" style="justify-content:space-between;align-items:center;margin:0 2px 10px"><button class="btn sm" data-act="backBod">‹ BODEGA</button><button class="btn sm" data-act="editLiq">EDITAR</button></div>
+  <div class="plate bolts"><div style="padding:0 10px"><div class="t" style="font-weight:700;font-size:17px">${esc(p.name)}</div><div class="note">${esc(p.cat||"")}${p.ml?" · "+p.ml+" ml":""}${p.cost?" · costo "+cop(p.cost):""}${p.price?" · a Social "+cop(p.price):""}</div></div>
+   <div class="kv" style="grid-template-columns:1fr 1fr"><div><span>EN BODEGA</span><b style="font-size:22px">${fmtQ(s.b)}</b></div><div><span>EN SOCIAL</span><b class="c-green" style="font-size:22px">${fmtQ(s.so)}</b></div></div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+   <button class="btn" data-act="movCompra">+ ENTRADA A BODEGA</button><button class="btn primary" data-act="movTraslado">LLEVAR A SOCIAL</button>
+   <button class="btn" data-act="movConsumo">GASTADO EN SOCIAL</button><button class="btn" data-act="movDevolucion">DEVOLVER A BODEGA</button>
+   <button class="btn warn" data-act="movBaja" style="grid-column:span 2">DAR DE BAJA (ROTO / DAÑADO)</button></div>
+  <h2 class="scr">HISTORIAL <b>${ms.length}</b></h2>
+  <div class="plate" style="padding:4px 12px">${ms.length?ms.map(m=>{const T=MOVT[m.type];return `<button class="entry" style="width:100%;background:none;border:0;border-bottom:1px solid #1e1f1e;text-align:left;color:inherit" data-mov="${m.id}"><span class="d">${sdate(m.date)}</span><span class="c"><span class="tag ${T.c}" style="padding:3px 6px">${T.l}</span>${m.note?`<br><span style="font:11px var(--mono);color:var(--mut)">${esc(m.note)}</span>`:""}</span><span class="a">${T.s} ${fmtQ(m.qty)}</span></button>`}).join(""):`<div class="empty" style="border:0">Sin movimientos.</div>`}</div>`;
+}
+function formLiq(p){
+  const isNew=!p; p=p||{name:"",cat:"Ron",ml:750,cost:"",price:""};
+  sheet(`<h3>${isNew?"NUEVO LICOR":"EDITAR · "+esc(p.name).toUpperCase()}</h3>
+  <label>NOMBRE<input name="name" required value="${esc(p.name)}" placeholder="Ej: Ron Viejo de Caldas 5 años"></label>
+  <div class="grid2"><label>CATEGORÍA<select name="cat">${LIQ_CATS.map(c=>`<option ${p.cat===c?"selected":""}>${c}</option>`).join("")}</select></label>
+  <label>PRESENTACIÓN (ML)<input name="ml" inputmode="numeric" value="${p.ml||""}" placeholder="750"></label></div>
+  <div class="grid2"><label>LO QUE TE COSTÓ<input name="cost" data-money inputmode="numeric" value="${p.cost?cop(p.cost):""}" placeholder="$"></label>
+  <label>PRECIO A SOCIAL<input name="price" data-money inputmode="numeric" value="${p.price?cop(p.price):""}" placeholder="$"></label></div>
+  <div class="note">"Precio a Social" es lo que Social te debe por cada botella que lleves.</div>
+  ${isNew?"":`<button type="button" class="btn warn" data-act="delLiq" data-id="${p.id}">ELIMINAR PRODUCTO</button>`}`,f=>{
+    const v={name:f.name.trim(),cat:f.cat,ml:num(f.ml)||"",cost:num(f.cost)||"",price:num(f.price)||""};
+    if(isNew){const n={id:uid(),...v};S.liq.push(n);openLiqId=n.id;tab="bodega"}else Object.assign(p,v); toast("GUARDADO");
+  });
+}
+function formMov(type,m){
+  const isNew=!m; const T=MOVT[type];
+  if(type!=="pago"&&!S.liq.length){toast("PRIMERO AGREGA UN PRODUCTO");return}
+  const cur=S.liq.find(x=>x.id===(m?m.pid:openLiqId))||S.liq[0];
+  m=m||{date:iso(today()),qty:1,pid:cur&&cur.id,price:cur&&cur.price||"",at:"bodega",note:"",amount:""};
+  const opts=S.liq.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(x=>{const s=stockOf(x.id);return `<option value="${x.id}" ${x.id===m.pid?"selected":""}>${esc(x.name)} (B ${fmtQ(s.b)} · S ${fmtQ(s.so)})</option>`}).join("");
+  const help={compra:"Botellas que entran a tu bodega.",traslado:"Botellas que salen de tu bodega y quedan en Social. Social te queda debiendo cantidad × precio.",devolucion:"Botellas que Social te devuelve; se descuentan de la deuda.",consumo:"Botellas que Social ya gastó o vendió (salen del stock de Social).",baja:"Botellas rotas, dañadas o perdidas.",pago:"Lo que Social te pagó por los licores."}[type];
+  sheet(`<h3>${T.l}</h3><div class="note">${help}</div>
+  ${type==="pago"?`<div class="grid2"><label>VALOR<input name="amount" required data-money inputmode="numeric" value="${m.amount?cop(m.amount):""}" placeholder="$"></label><label>FECHA<input name="date" type="date" required value="${m.date}"></label></div>`:
+  `<label>PRODUCTO<select name="pid" id="movPid">${opts}</select></label>
+  <div class="grid2"><label>BOTELLAS<input name="qty" required inputmode="decimal" value="${m.qty}"></label><label>FECHA<input name="date" type="date" required value="${m.date}"></label></div>
+  ${type==="traslado"||type==="devolucion"?`<label>PRECIO POR BOTELLA A SOCIAL<input name="price" id="movPrice" data-money inputmode="numeric" value="${m.price?cop(m.price):""}" placeholder="$"></label>`:""}
+  ${type==="baja"?`<label>¿DÓNDE ESTABA?<select name="at"><option value="bodega" ${m.at!=="social"?"selected":""}>En bodega</option><option value="social" ${m.at==="social"?"selected":""}>En Social</option></select></label>`:""}`}
+  <label>NOTA · OPCIONAL<input name="note" value="${esc(m.note||"")}" placeholder="${type==="baja"?"Ej: se rompió en el traslado":"Ej: para el fin de semana"}"></label>
+  ${isNew?"":`<button type="button" class="btn warn" data-act="delMov" data-id="${m.id}">ELIMINAR MOVIMIENTO</button>`}`,f=>{
+    if(type==="pago"){const v={type,amount:num(f.amount),date:f.date,note:f.note.trim()};if(!v.amount){toast("PON UN VALOR");return false}
+      if(isNew)S.mov.push({id:uid(),...v});else Object.assign(m,v);toast("PAGO REGISTRADO");return}
+    const qty=parseFloat(String(f.qty).replace(",","."))||0;if(qty<=0){toast("CANTIDAD INVÁLIDA");return false}
+    const v={type,pid:f.pid,qty,date:f.date,note:f.note.trim()};
+    if(f.price!==undefined)v.price=num(f.price);
+    if(type==="baja")v.at=f.at;
+    // valida existencias en el origen (sin contar este mismo movimiento si se edita)
+    const prev=isNew?null:{...m}; if(!isNew)m.qty=0;
+    const s=stockOf(v.pid); if(!isNew)m.qty=prev.qty;
+    const origin=type==="traslado"||(type==="baja"&&v.at!=="social")?s.b:type==="consumo"||type==="devolucion"||(type==="baja"&&v.at==="social")?s.so:Infinity;
+    if(qty>origin+1e-9){toast(`SOLO HAY ${fmtQ(Math.max(0,origin))} EN ${type==="traslado"||(type==="baja"&&v.at!=="social")?"BODEGA":"SOCIAL"}`);return false}
+    if(isNew)S.mov.push({id:uid(),...v});else Object.assign(m,v);
+    toast(type==="traslado"?`LLEVADO A SOCIAL · DEBE ${cop(qty*(v.price||0))}`:T.l);
+  });
+  const sel=$("#movPid"),pr=$("#movPrice");if(sel&&pr&&isNew)sel.onchange=()=>{const x=S.liq.find(y=>y.id===sel.value);pr.value=x&&x.price?cop(x.price):""};
+}
 function vFuel(){
   const list=S.bills.map(b=>({b,s:billStatus(b)})).sort((x,y)=>x.s.days-y.s.days);
   const t=new Date();
@@ -537,7 +637,7 @@ function vFuel(){
 }
 function vTorre(){
   const t=iso(today());
-  const seg=`<div class="seg" style="margin:0 2px 4px">${[["agenda","REUNIONES"],["misiones","MISIONES"]].map(([k,l])=>`<button data-tv="${k}" class="${torreView===k?"act":""}">${l}</button>`).join("")}</div>`;
+  const seg=`<div class="seg" style="margin:0 2px 4px">${[["agenda","REUNIONES"],["misiones","MISIONES"]].map(([k,l])=>{const pend=S.tasks.filter(x=>!x.done),late=pend.some(x=>x.due&&x.due<iso(today()));const lamp=k==="misiones"&&pend.length?`<span class="segdot ${late?"red":""}"></span>`:k==="agenda"&&S.meetings.some(m=>m.date===iso(today()))?`<span class="segdot"></span>`:"";return `<button data-tv="${k}" class="${torreView===k?"act":""}" style="position:relative">${l}${k==="misiones"&&pend.length?` <b style="color:var(--amber)">${pend.length}</b>`:""}${lamp}</button>`}).join("")}</div>`;
   if(torreView==="misiones"){
     const open=S.tasks.filter(x=>!x.done).sort((a,b)=>(a.due||"9").localeCompare(b.due||"9")), done=S.tasks.filter(x=>x.done).slice(-8).reverse();
     const card=x=>{const late=!x.done&&x.due&&x.due<t;return `<div class="row ${x.done?"done":""}"><button class="main" style="background:none;border:0;text-align:left;padding:0;color:inherit" data-task="${x.id}"><div class="t">${esc(x.title)}${x.ex?'<span class="ex">EJEMPLO</span>':""}</div><div class="s">${x.due?(late?'<span class="c-red">VENCIÓ · </span>':"")+fdate(x.due):"Sin fecha"}</div></button><button class="sw ${x.done?"on":""}" data-tk="${x.id}" aria-label="Completar ${esc(x.title)}"><i></i></button></div>`};
@@ -553,16 +653,16 @@ function vTorre(){
 
 /* =================== Render =================== */
 function render(){
-  $("#app").innerHTML={panel:vPanel,carga:vCarga,crew:vCrew,spoiler:vSpoiler,fuel:vFuel,torre:vTorre}[tab]();
+  $("#app").innerHTML={panel:vPanel,carga:vCarga,crew:vCrew,spoiler:vSpoiler,bodega:vBodega,fuel:vFuel,torre:vTorre}[tab]();
   document.querySelectorAll("nav.tabs button").forEach(b=>{b.classList.toggle("act",b.dataset.tab===tab);b.querySelector(".dot")?.remove()});
   const st=stats(), dot=(t,red)=>{const b=document.querySelector(`nav.tabs [data-tab="${t}"]`);const s=document.createElement("span");s.className="dot"+(red?" red":"");b.appendChild(s)};
   if(st.pend)dot("carga"); if(st.over)dot("fuel",true);else if(st.soon)dot("fuel");
   if(!st.closedToday&&new Date().getHours()>=18)dot("spoiler");
-  if(st.tover)dot("torre",true);else if(st.near.some(m=>m.date===iso(today())))dot("torre");
-  try{navigator.setAppBadge&&(st.pend+st.over+st.soon?navigator.setAppBadge(st.pend+st.over+st.soon):navigator.clearAppBadge())}catch(e){}
+  if(st.tover)dot("torre",true);else if(st.ttot-st.tdone>0||st.near.some(m=>m.date===iso(today())))dot("torre");
+  try{navigator.setAppBadge&&(st.pend+st.over+st.soon+st.ttot-st.tdone?navigator.setAppBadge(st.pend+st.over+st.soon+st.ttot-st.tdone):navigator.clearAppBadge())}catch(e){}
 }
 const keep=f=>{const y=scrollY;f();render();scrollTo(0,y)};
-function go(t){tab=t;openReqId=null;openCrewId=null;render();scrollTo(0,0)}
+function go(t){tab=t;openReqId=null;openCrewId=null;openLiqId=null;render();scrollTo(0,0)}
 function toast(m){const d=document.createElement("div");d.className="toast";d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
 function buzz(){try{navigator.vibrate&&navigator.vibrate(10)}catch(e){}}
 
@@ -711,9 +811,16 @@ document.addEventListener("click",e=>{
   if(d.task){formTask(S.tasks.find(x=>x.id===d.task));return}
   if(d.entry){const en=p.entries.find(x=>x.id===d.entry);formEntry(p,en.type,en);return}
   if(d.close){formClose(S.closes.find(x=>x.id===d.close));return}
+  if(d.liq){openLiqId=d.liq;render();scrollTo(0,0);return}
+  if(d.bv){bodView=d.bv;render();return}
+  if(d.mov){const m=S.mov.find(x=>x.id===d.mov);if(m)formMov(m.type,m);return}
   if(d.tk){const x=S.tasks.find(t=>t.id===d.tk);x.done=!x.done;buzz();save();keep(()=>{});if(x.done)toast("MISSION ACCOMPLISHED");return}
   const A={
-    newReq:formReq,newClose:()=>{const ex=S.closes.find(x=>x.date===iso(today()));formClose(ex)},
+    newReq:formReq,newLiq:()=>formLiq(),editLiq:()=>formLiq(S.liq.find(x=>x.id===openLiqId)),backBod:()=>{openLiqId=null;render()},
+    movCompra:()=>formMov("compra"),movTraslado:()=>formMov("traslado"),movPago:()=>formMov("pago"),movConsumo:()=>formMov("consumo"),movDevolucion:()=>formMov("devolucion"),movBaja:()=>formMov("baja"),
+    delMov:()=>{S.mov=S.mov.filter(x=>x.id!==d.id);save();closeSheet();keep(()=>{})},
+    delLiq:()=>confirmBox("ELIMINAR PRODUCTO",`Se borra "${esc(liqName(d.id))}" y todos sus movimientos.`,"confirmDelLiq","ELIMINAR"),
+    confirmDelLiq:()=>{const id=openLiqId;S.liq=S.liq.filter(x=>x.id!==id);S.mov=S.mov.filter(m=>m.pid!==id);openLiqId=null;save();closeSheet();render()},newClose:()=>{const ex=S.closes.find(x=>x.date===iso(today()));formClose(ex)},
     delClose:()=>{S.closes=S.closes.filter(x=>x.id!==d.id);save();closeSheet();render()},newBill:()=>formBill(),newMeet:()=>formMeet(),newTask:()=>formTask(),newPerson:()=>formPerson(),
     editPerson:()=>formPerson(p),addCargo:()=>formEntry(p,"cargo"),addAbono:()=>formEntry(p,"abono"),
     closeSheet,back:()=>{openReqId=null;render()},backCrew:()=>{openCrewId=null;render()},
