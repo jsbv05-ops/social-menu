@@ -867,20 +867,7 @@ function buildHello(){
   svg.innerHTML=h;
 }
 buildHello();
-const WA="https://wa.me/573152859643";
-function capitana(){
-  const k="socialapp_capitana", t=iso(today()); let last=""; try{last=localStorage.getItem(k)||""}catch(e){}
-  if(last===t)return; try{localStorage.setItem(k,t)}catch(e){}
-  $("#sheet").innerHTML=`<div style="text-align:center;display:grid;gap:12px;padding:6px 0">
-   <div class="lamp on-amber" style="height:40px;font-size:10px">TRANSMISIÓN ENTRANTE · PRIORIDAD ALTA</div>
-   <div style="font:700 9px var(--mono);letter-spacing:2px;color:var(--mut)">FRECUENCIA 121.5 · CANAL PRIVADO</div>
-   <h3 style="font-size:17px;letter-spacing:2px">LA CAPITANA LLAMA A CABINA</h3>
-   <div class="note">Se solicita respuesta inmediata del capitán.<br>No se autoriza ninguna operación sin antes responder.</div>
-   <a class="btn primary block" href="${WA}" target="_blank" rel="noopener" style="text-decoration:none;display:block">RESPONDER A LA CAPITANA</a>
-   <button class="btn ghost" data-act="closeSheet" style="color:var(--mut)">MÁS TARDE (BAJO MI RIESGO)</button></div>`;
-  $("#sheetBg").hidden=false;
-}
-$("#startBtn").onclick=()=>{buzz();$("#hello").hidden=true;$("#app").hidden=false;$("#tabs").hidden=false;render();sync();setTimeout(capitana,700)};
+$("#startBtn").onclick=()=>{buzz();$("#hello").hidden=true;$("#app").hidden=false;$("#tabs").hidden=false;render();sync()};
 setInterval(()=>{const a=document.activeElement;if(!$("#app").hidden&&$("#sheetBg").hidden&&!(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)))keep(()=>{})},60000);
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>
