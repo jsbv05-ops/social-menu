@@ -309,10 +309,7 @@ const CARTA = {
     {name:"Empanadas y más",items:[
       {id:"empcarne",name:"Empanada de carne",price:3000,t:["salado","picar"]},
       {id:"emppollo",name:"Empanada de pollo",price:3500,t:["salado","picar"]},
-      {id:"arepa",name:"Arepa mixta",price:5000,t:["salado","llenar"]}]},
-    {name:"Palitos",items:[
-      {id:"palitoqueso",name:"Palito de queso",price:5000,t:["salado","picar"]},
-      {id:"palitobocadillo",name:"Palito de bocadillo y queso",price:5500,t:["salado","picar","dulcesalado"]}]}
+      {id:"arepa",name:"Arepa mixta",price:5000,t:["salado","llenar"]}]}
   ],
   postres:[{items:[
     {id:"socialmm",name:"Social Cream de M&M's",price:8000,badge:"De la casa",t:["postre","postrefrio"]},
@@ -344,8 +341,7 @@ const CARTA = {
       {id:"cocazero",name:"Coca-Cola Zero 250 ml",price:2500,t:["refresco"]},
       {id:"gatorade",name:"Gatorade",price:5000,t:["refresco"]},
       {id:"electrolit",name:"Electrolit maracuyá",price:9000},
-      {id:"aguagrande",name:"Agua grande",price:3000},
-      {id:"aguapeq",name:"Agua pequeña",price:1000}]}
+      {id:"aguagrande",name:"Agua",price:3000}]}
   ],
   licores:[
     {name:"Aguardiente",items:[
@@ -562,7 +558,7 @@ const Q = {
   acompanar: () => ({
     title: pickText(["¿Lo acompañas con algo?","¿Y para acompañar?"]),
     opts: [
-      {icon:"salt",  label:"Sí, algo salado", sub:"Empanada, arepa o palito", why:"Con algo salado", pair:["salado","picar"]},
+      {icon:"salt",  label:"Sí, algo salado", sub:"Empanada o arepa", why:"Con algo salado", pair:["salado","picar"]},
       {icon:"sweet", label:"Sí, algo dulce", sub:"Torta o helado", why:"Con algo dulce", pair:["postre"]},
       {icon:"none",  label:"Solo la bebida", why:"Solo bebida"}
     ]}),
